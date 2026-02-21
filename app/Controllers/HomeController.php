@@ -18,6 +18,7 @@ class HomeController
 
         $title = 'FitTrack Studio';
         $scriptFile = 'public/assets/js/app.js';
+        $bodyClass = 'page-home';
 
         require __DIR__ . '/../Views/layouts/header.php';
         require __DIR__ . '/../Views/home/index.php';

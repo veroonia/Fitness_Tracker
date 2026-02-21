@@ -29,6 +29,7 @@ class DashboardController
 
         $title = 'Dashboard - FitTrack Studio';
         $scriptFile = 'public/assets/js/dashboard.js';
+        $bodyClass = 'page-dashboard';
 
         require __DIR__ . '/../Views/layouts/header.php';
         require __DIR__ . '/../Views/dashboard/index.php';

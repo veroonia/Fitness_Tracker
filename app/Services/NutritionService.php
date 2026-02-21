@@ -10,7 +10,7 @@ class NutritionService
         $appKey = AppConfig::nutritionAppKey();
 
         if ($appId === 'YOUR_EDAMAM_APP_ID' || $appKey === 'YOUR_EDAMAM_APP_KEY') {
-            throw new RuntimeException('Nutrition API key is not configured.');
+            throw new RuntimeException('Nutrition API key is not configured. Create a .env file with EDAMAM_APP_ID and EDAMAM_APP_KEY.');
         }
 
         $url = 'https://api.edamam.com/api/nutrition-data?app_id=' . urlencode($appId)

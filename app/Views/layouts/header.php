@@ -6,4 +6,4 @@
     <title><?php echo htmlspecialchars($title ?? 'FitTrack Studio', ENT_QUOTES, 'UTF-8'); ?></title>
     <link rel="stylesheet" href="public/assets/css/style.css" />
 </head>
-<body>
+<body class="<?php echo htmlspecialchars($bodyClass ?? '', ENT_QUOTES, 'UTF-8'); ?>">
