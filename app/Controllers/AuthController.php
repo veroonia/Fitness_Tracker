@@ -32,23 +32,26 @@ class AuthController
         }
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        $created = $this->users->create($username, $email, $passwordHash);
+        $createdUserId = $this->users->create($username, $email, $passwordHash);
 
-        if (!$created) {
+        if ($createdUserId === null) {
             http_response_code(500);
             echo json_encode(['success' => false, 'message' => 'Unable to create account right now.']);
             return;
         }
 
         $_SESSION['user'] = [
+            'id' => $createdUserId,
             'username' => $username,
             'email' => $email,
+            'goal_preference' => null,
         ];
 
         echo json_encode([
             'success' => true,
             'message' => 'Account created successfully.',
             'user' => $_SESSION['user'],
+            'redirectTo' => 'index.php?route=goals',
         ]);
     }
 
@@ -74,14 +77,21 @@ class AuthController
         }
 
         $_SESSION['user'] = [
+            'id' => (int)$user['id'],
             'username' => $user['username'],
             'email' => $user['email'],
+            'goal_preference' => $user['goal_preference'] ?? null,
         ];
+
+        $redirectTo = ($_SESSION['user']['goal_preference'] ?? null) === null
+            ? 'index.php?route=goals'
+            : 'index.php?route=dashboard';
 
         echo json_encode([
             'success' => true,
             'message' => 'Logged in successfully.',
             'user' => $_SESSION['user'],
+            'redirectTo' => $redirectTo,
         ]);
     }
 

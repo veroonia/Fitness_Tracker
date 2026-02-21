@@ -6,6 +6,7 @@
     <nav class="nav-actions">
         <button id="openLoginBtn" class="btn-ghost" type="button">Log In</button>
         <button id="openSignupBtn" class="btn-solid" type="button">Sign Up</button>
+        <button id="logoutBtn" class="btn-ghost hidden" type="button">Log Out</button>
     </nav>
 </header>
 

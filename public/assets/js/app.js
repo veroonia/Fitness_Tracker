@@ -20,6 +20,7 @@ const loginModal = document.getElementById('loginModal');
 
 const openSignupBtn = document.getElementById('openSignupBtn');
 const openLoginBtn = document.getElementById('openLoginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
 const switchToLogin = document.getElementById('switchToLogin');
 const switchToSignup = document.getElementById('switchToSignup');
 
@@ -79,7 +80,18 @@ function updateAuthUI() {
         openSignupBtn.disabled = true;
         openLoginBtn.textContent = 'Logged In';
         openLoginBtn.disabled = true;
+        logoutBtn.classList.remove('hidden');
+        if (currentUser.goal_preference) {
+            trackMealsBtn.textContent = 'Open Dashboard';
+        }
+        return;
     }
+
+    openSignupBtn.textContent = 'Sign Up';
+    openSignupBtn.disabled = false;
+    openLoginBtn.textContent = 'Log In';
+    openLoginBtn.disabled = false;
+    logoutBtn.classList.add('hidden');
 }
 
 function showStatus(message) {
@@ -179,7 +191,11 @@ Object.values(persistedFields).forEach(function (field) {
 
 trackMealsBtn.addEventListener('click', function () {
     if (currentUser && currentUser.username) {
-        showStatus(`Welcome ${currentUser.username}. Meal tracking screen is the next module.`);
+        if (currentUser.goal_preference) {
+            window.location.href = 'index.php?route=dashboard';
+            return;
+        }
+        window.location.href = 'index.php?route=goals';
         return;
     }
     openModal('signup');
@@ -213,6 +229,19 @@ document.querySelectorAll('.modal-close').forEach(function (button) {
 
 modalBackdrop.addEventListener('click', closeAllModals);
 
+logoutBtn.addEventListener('click', async function () {
+    try {
+        await fetch('index.php?route=auth/logout', {
+            method: 'POST'
+        });
+    } catch (error) {
+    }
+
+    currentUser = null;
+    updateAuthUI();
+    window.location.href = 'index.php?route=home';
+});
+
 signupForm.addEventListener('submit', async function (event) {
     event.preventDefault();
     signupError.textContent = '';
@@ -241,9 +270,10 @@ signupForm.addEventListener('submit', async function (event) {
 
         currentUser = data.user;
         updateAuthUI();
-        showStatus('Account created. You can now track and log meals.');
+        showStatus('Account created. Redirecting to goal setup...');
         signupForm.reset();
         closeAllModals();
+        window.location.href = data.redirectTo || 'index.php?route=goals';
     } catch (error) {
         signupError.textContent = 'Server connection failed. Check Apache/MySQL.';
     }
@@ -276,9 +306,10 @@ loginForm.addEventListener('submit', async function (event) {
 
         currentUser = data.user;
         updateAuthUI();
-        showStatus(`Welcome back ${currentUser.username}.`);
+        showStatus(`Welcome back ${currentUser.username}. Redirecting...`);
         loginForm.reset();
         closeAllModals();
+        window.location.href = data.redirectTo || 'index.php?route=dashboard';
     } catch (error) {
         loginError.textContent = 'Server connection failed. Check Apache/MySQL.';
     }
