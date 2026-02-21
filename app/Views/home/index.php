@@ -79,35 +79,6 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="table-wrap category-table-wrap">
-                <table class="result-table" aria-label="BMI category ranges">
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th>BMI Range</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr id="cat-underweight">
-                            <td>Underweight</td>
-                            <td>&lt; 18.5</td>
-                        </tr>
-                        <tr id="cat-normal">
-                            <td>Normal weight</td>
-                            <td>18.5 - 24.9</td>
-                        </tr>
-                        <tr id="cat-overweight">
-                            <td>Overweight</td>
-                            <td>25.0 - 29.9</td>
-                        </tr>
-                        <tr id="cat-obesity">
-                            <td>Obesity</td>
-                            <td>&ge; 30</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
 
         <div class="result-row">
@@ -122,16 +93,28 @@
                     </thead>
                     <tbody>
                         <tr>
+                            <td>Huge Deficit (aggressive fat loss)</td>
+                            <td id="hugeDeficitText">-</td>
+                        </tr>
+                        <tr>
+                            <td>Moderate Deficit (steady fat loss)</td>
+                            <td id="moderateDeficitText">-</td>
+                        </tr>
+                        <tr>
+                            <td>Mild Deficit (easy fat loss)</td>
+                            <td id="mildDeficitText">-</td>
+                        </tr>
+                        <tr>
                             <td>Maintenance</td>
                             <td id="maintenanceText">-</td>
                         </tr>
                         <tr>
-                            <td>Deficit (fat loss)</td>
-                            <td id="deficitText">-</td>
+                            <td>Lean Gain (small surplus)</td>
+                            <td id="leanGainText">-</td>
                         </tr>
                         <tr>
-                            <td>Gain (muscle/weight)</td>
-                            <td id="gainText">-</td>
+                            <td>Aggressive Gain (bigger surplus)</td>
+                            <td id="aggressiveGainText">-</td>
                         </tr>
                     </tbody>
                 </table>

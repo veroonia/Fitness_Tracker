@@ -4,16 +4,12 @@ const errorText = document.getElementById('error');
 
 const bmiValue = document.getElementById('bmiValue');
 const bmiCategoryCell = document.getElementById('bmiCategory');
+const hugeDeficitText = document.getElementById('hugeDeficitText');
+const moderateDeficitText = document.getElementById('moderateDeficitText');
+const mildDeficitText = document.getElementById('mildDeficitText');
 const maintenanceText = document.getElementById('maintenanceText');
-const deficitText = document.getElementById('deficitText');
-const gainText = document.getElementById('gainText');
-
-const categoryRows = {
-    Underweight: document.getElementById('cat-underweight'),
-    'Normal weight': document.getElementById('cat-normal'),
-    Overweight: document.getElementById('cat-overweight'),
-    Obesity: document.getElementById('cat-obesity')
-};
+const leanGainText = document.getElementById('leanGainText');
+const aggressiveGainText = document.getElementById('aggressiveGainText');
 
 const trackMealsBtn = document.getElementById('trackMealsBtn');
 const authStatus = document.getElementById('authStatus');
@@ -33,6 +29,15 @@ const signupError = document.getElementById('signupError');
 const loginError = document.getElementById('loginError');
 
 let currentUser = window.APP_CURRENT_USER || null;
+const FORM_STORAGE_KEY = 'fittrack-form-values';
+
+const persistedFields = {
+    age: document.getElementById('age'),
+    sex: document.getElementById('sex'),
+    height: document.getElementById('height'),
+    weight: document.getElementById('weight'),
+    activity: document.getElementById('activity')
+};
 
 function getBmiCategory(bmi) {
     if (bmi < 18.5) {
@@ -49,12 +54,6 @@ function getBmiCategory(bmi) {
 
 function roundCalories(value) {
     return Math.round(value / 10) * 10;
-}
-
-function clearCategoryHighlights() {
-    Object.values(categoryRows).forEach(function (row) {
-        row.classList.remove('category-active');
-    });
 }
 
 function closeAllModals() {
@@ -88,6 +87,40 @@ function showStatus(message) {
     authStatus.classList.remove('hidden');
 }
 
+function saveFormValues() {
+    const formValues = {
+        age: persistedFields.age.value,
+        sex: persistedFields.sex.value,
+        height: persistedFields.height.value,
+        weight: persistedFields.weight.value,
+        activity: persistedFields.activity.value
+    };
+
+    localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(formValues));
+}
+
+function restoreFormValues() {
+    const raw = localStorage.getItem(FORM_STORAGE_KEY);
+    if (!raw) {
+        return;
+    }
+
+    try {
+        const formValues = JSON.parse(raw);
+        if (!formValues || typeof formValues !== 'object') {
+            return;
+        }
+
+        Object.keys(persistedFields).forEach(function (fieldName) {
+            if (typeof formValues[fieldName] === 'string') {
+                persistedFields[fieldName].value = formValues[fieldName];
+            }
+        });
+    } catch (error) {
+        localStorage.removeItem(FORM_STORAGE_KEY);
+    }
+}
+
 form.addEventListener('submit', function (event) {
     event.preventDefault();
     errorText.textContent = '';
@@ -116,26 +149,32 @@ form.addEventListener('submit', function (event) {
     }
 
     const maintenanceCalories = roundCalories(bmr * activityFactor);
-    const deficitCalories = roundCalories(maintenanceCalories * 0.85);
-    const gainCalories = roundCalories(maintenanceCalories * 1.10);
+    const hugeDeficitCalories = roundCalories(maintenanceCalories * 0.70);
+    const moderateDeficitCalories = roundCalories(maintenanceCalories * 0.80);
+    const mildDeficitCalories = roundCalories(maintenanceCalories * 0.90);
+    const leanGainCalories = roundCalories(maintenanceCalories * 1.10);
+    const aggressiveGainCalories = roundCalories(maintenanceCalories * 1.15);
 
     bmiValue.textContent = bmi.toFixed(1);
     bmiValue.className = 'result-emphasis';
     bmiCategoryCell.innerHTML = `<span class="tag ${bmiInfo.className}">${bmiInfo.label}</span>`;
 
+    hugeDeficitText.innerHTML = `<span class="result-emphasis">${hugeDeficitCalories} kcal/day</span>`;
+    moderateDeficitText.innerHTML = `<span class="result-emphasis">${moderateDeficitCalories} kcal/day</span>`;
+    mildDeficitText.innerHTML = `<span class="result-emphasis">${mildDeficitCalories} kcal/day</span>`;
     maintenanceText.innerHTML = `<span class="result-emphasis">${maintenanceCalories} kcal/day</span>`;
-    deficitText.innerHTML = `<span class="result-emphasis">${deficitCalories} kcal/day</span>`;
-    gainText.innerHTML = `<span class="result-emphasis">${gainCalories} kcal/day</span>`;
-
-    clearCategoryHighlights();
-    const currentCategoryRow = categoryRows[bmiInfo.label];
-    if (currentCategoryRow) {
-        currentCategoryRow.classList.add('category-active');
-    }
+    leanGainText.innerHTML = `<span class="result-emphasis">${leanGainCalories} kcal/day</span>`;
+    aggressiveGainText.innerHTML = `<span class="result-emphasis">${aggressiveGainCalories} kcal/day</span>`;
 
     results.style.display = 'block';
     trackMealsBtn.classList.remove('hidden');
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    saveFormValues();
+});
+
+Object.values(persistedFields).forEach(function (field) {
+    field.addEventListener('input', saveFormValues);
+    field.addEventListener('change', saveFormValues);
 });
 
 trackMealsBtn.addEventListener('click', function () {
@@ -246,3 +285,4 @@ loginForm.addEventListener('submit', async function (event) {
 });
 
 updateAuthUI();
+restoreFormValues();
