@@ -13,6 +13,7 @@ require_once __DIR__ . '/app/Controllers/HomeController.php';
 require_once __DIR__ . '/app/Controllers/AuthController.php';
 require_once __DIR__ . '/app/Controllers/GoalController.php';
 require_once __DIR__ . '/app/Controllers/DashboardController.php';
+require_once __DIR__ . '/app/Controllers/ProfileController.php';
 
 $route = $_GET['route'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -21,6 +22,7 @@ $homeController = new HomeController();
 $authController = new AuthController();
 $goalController = new GoalController();
 $dashboardController = new DashboardController();
+$profileController = new ProfileController();
 
 if ($route === '' || $route === 'home') {
     $homeController->index();
@@ -59,6 +61,36 @@ if ($route === 'dashboard' && $method === 'GET') {
 
 if ($route === 'dashboard/log-food' && $method === 'POST') {
     $dashboardController->logFood();
+    exit;
+}
+
+if ($route === 'profile' && $method === 'GET') {
+    $profileController->index();
+    exit;
+}
+
+if ($route === 'profile/update-data' && $method === 'POST') {
+    $profileController->updateData();
+    exit;
+}
+
+if ($route === 'profile/settings' && $method === 'GET') {
+    $profileController->settings();
+    exit;
+}
+
+if ($route === 'profile/settings/add-account' && $method === 'POST') {
+    $profileController->addAccount();
+    exit;
+}
+
+if ($route === 'profile/settings/edit-account' && $method === 'POST') {
+    $profileController->editAccount();
+    exit;
+}
+
+if ($route === 'profile/settings/delete-account' && $method === 'POST') {
+    $profileController->deleteAccount();
     exit;
 }
 

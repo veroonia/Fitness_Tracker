@@ -5,7 +5,7 @@
             <li class="active">Home</li>
             <li>Meals</li>
             <li>Stats</li>
-            <li>Profile</li>
+            <li><a href="index.php?route=profile">Profile</a></li>
         </ul>
     </aside>
 
@@ -19,6 +19,7 @@
                 </div>
             </div>
             <div class="dash-top-actions">
+                <a class="btn-ghost dashboard-exit" href="index.php?route=profile/settings">Settings</a>
                 <a class="btn-ghost dashboard-exit" href="index.php?route=home">Back to Calculator</a>
                 <button id="dashboardLogoutBtn" class="btn-ghost" type="button">Log Out</button>
             </div>

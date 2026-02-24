@@ -65,4 +65,11 @@ class Meal
             'fat_g' => round((float)($totals['fat_g'] ?? 0), 1),
         ];
     }
+
+    public function deleteByUser(int $userId): bool
+    {
+        $statement = $this->db->prepare('DELETE FROM meals WHERE user_id = :user_id');
+
+        return $statement->execute(['user_id' => $userId]);
+    }
 }

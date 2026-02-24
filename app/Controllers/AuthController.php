@@ -45,6 +45,10 @@ class AuthController
             'username' => $username,
             'email' => $email,
             'goal_preference' => null,
+            'age' => null,
+            'height_cm' => null,
+            'weight_kg' => null,
+            'bmi' => null,
         ];
 
         echo json_encode([
@@ -81,6 +85,10 @@ class AuthController
             'username' => $user['username'],
             'email' => $user['email'],
             'goal_preference' => $user['goal_preference'] ?? null,
+            'age' => $user['age'] ?? null,
+            'height_cm' => $user['height_cm'] ?? null,
+            'weight_kg' => $user['weight_kg'] ?? null,
+            'bmi' => $user['bmi'] ?? null,
         ];
 
         $redirectTo = ($_SESSION['user']['goal_preference'] ?? null) === null
