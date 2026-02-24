@@ -57,17 +57,10 @@ class AppConfig
         }
     }
 
-    public static function nutritionAppId(): string
+    public static function nutritionApiKey(): string
     {
         self::loadEnvFile();
-        $value = getenv('EDAMAM_APP_ID');
-        return $value !== false ? $value : 'YOUR_EDAMAM_APP_ID';
-    }
-
-    public static function nutritionAppKey(): string
-    {
-        self::loadEnvFile();
-        $value = getenv('EDAMAM_APP_KEY');
-        return $value !== false ? $value : 'YOUR_EDAMAM_APP_KEY';
+        $value = getenv('USDA_API_KEY');
+        return $value !== false ? $value : 'YOUR_USDA_API_KEY';
     }
 }
