@@ -26,6 +26,7 @@ class ProfileController
         $title = 'Profile - FitTrack Studio';
         $scriptFile = 'public/assets/js/profile.js';
         $bodyClass = 'page-profile';
+        $extraStyleFile = 'public/assets/css/profile.css';
 
         require __DIR__ . '/../Views/layouts/header.php';
         require __DIR__ . '/../Views/profile/index.php';
@@ -45,6 +46,7 @@ class ProfileController
         $title = 'Profile Settings - FitTrack Studio';
         $scriptFile = 'public/assets/js/settings.js';
         $bodyClass = 'page-profile-settings';
+        $extraStyleFile = 'public/assets/css/settings.css';
 
         require __DIR__ . '/../Views/layouts/header.php';
         require __DIR__ . '/../Views/profile/settings.php';
