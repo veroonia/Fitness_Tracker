@@ -8,5 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="public/assets/css/style.css" />
+    <?php if (!empty($extraStyleFile)): ?>
+        <link rel="stylesheet" href="<?php echo htmlspecialchars((string)$extraStyleFile, ENT_QUOTES, 'UTF-8'); ?>" />
+    <?php endif; ?>
 </head>
 <body class="<?php echo htmlspecialchars($bodyClass ?? '', ENT_QUOTES, 'UTF-8'); ?>">

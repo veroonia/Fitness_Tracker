@@ -24,6 +24,7 @@ class GoalController
         $title = 'Pick Your Goal - FitTrack Studio';
         $scriptFile = 'public/assets/js/goal.js';
         $bodyClass = 'page-goals';
+        $extraStyleFile = 'public/assets/css/goal.css';
 
         require __DIR__ . '/../Views/layouts/header.php';
         require __DIR__ . '/../Views/goals/select.php';
