@@ -26,29 +26,6 @@
 
         <section class="settings-grid">
             <article class="settings-card">
-                <h3>Add Account</h3>
-                <p>Create another user account.</p>
-                <form id="addAccountForm" class="profile-form" novalidate>
-                    <div class="field">
-                        <label for="addUsername">Username</label>
-                        <input id="addUsername" name="username" type="text" required />
-                    </div>
-                    <div class="field">
-                        <label for="addEmail">Email</label>
-                        <input id="addEmail" name="email" type="email" required />
-                    </div>
-                    <div class="field full">
-                        <label for="addPassword">Password</label>
-                        <input id="addPassword" name="password" type="password" minlength="6" required />
-                    </div>
-                    <div class="full profile-form-actions">
-                        <button type="submit" class="btn-solid">Add Account</button>
-                    </div>
-                </form>
-                <p id="addAccountMessage" class="profile-message" aria-live="polite"></p>
-            </article>
-
-            <article class="settings-card">
                 <h3>Edit Account</h3>
                 <p>Update your username, email, or password.</p>
                 <form id="editAccountForm" class="profile-form" novalidate>

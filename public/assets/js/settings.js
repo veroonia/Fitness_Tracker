@@ -1,9 +1,7 @@
-const addAccountForm = document.getElementById('addAccountForm');
 const editAccountForm = document.getElementById('editAccountForm');
 const deleteAccountForm = document.getElementById('deleteAccountForm');
 const settingsLogoutBtn = document.getElementById('settingsLogoutBtn');
 
-const addAccountMessage = document.getElementById('addAccountMessage');
 const editAccountMessage = document.getElementById('editAccountMessage');
 const deleteAccountMessage = document.getElementById('deleteAccountMessage');
 
@@ -11,39 +9,6 @@ function setMessage(element, message, isError) {
     element.className = isError ? 'profile-message error-text' : 'profile-message success-text';
     element.textContent = message;
 }
-
-addAccountForm.addEventListener('submit', async function (event) {
-    event.preventDefault();
-    setMessage(addAccountMessage, '', false);
-
-    const body = new URLSearchParams({
-        username: document.getElementById('addUsername').value.trim(),
-        email: document.getElementById('addEmail').value.trim(),
-        password: document.getElementById('addPassword').value
-    });
-
-    try {
-        const response = await fetch('index.php?route=profile/settings/add-account', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: body.toString()
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-            setMessage(addAccountMessage, data.message || 'Unable to add account.', true);
-            return;
-        }
-
-        addAccountForm.reset();
-        setMessage(addAccountMessage, data.message || 'Account added.', false);
-    } catch (error) {
-        setMessage(addAccountMessage, 'Server error while adding account.', true);
-    }
-});
 
 editAccountForm.addEventListener('submit', async function (event) {
     event.preventDefault();

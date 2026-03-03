@@ -114,42 +114,6 @@ class ProfileController
         ]);
     }
 
-    public function addAccount(): void
-    {
-        header('Content-Type: application/json');
-        $this->ensureAuthenticated(true);
-
-        $username = trim((string)($_POST['username'] ?? ''));
-        $email = strtolower(trim((string)($_POST['email'] ?? '')));
-        $password = (string)($_POST['password'] ?? '');
-
-        if ($username === '' || $email === '' || strlen($password) < 6 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            http_response_code(422);
-            echo json_encode(['success' => false, 'message' => 'Provide valid username, email, and password (min 6 chars).']);
-            return;
-        }
-
-        if ($this->users->findByEmail($email) !== null) {
-            http_response_code(409);
-            echo json_encode(['success' => false, 'message' => 'Email is already registered.']);
-            return;
-        }
-
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        $createdUserId = $this->users->create($username, $email, $passwordHash);
-
-        if ($createdUserId === null) {
-            http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Unable to create account right now.']);
-            return;
-        }
-
-        echo json_encode([
-            'success' => true,
-            'message' => 'New account added successfully.',
-        ]);
-    }
-
     public function editAccount(): void
     {
         header('Content-Type: application/json');

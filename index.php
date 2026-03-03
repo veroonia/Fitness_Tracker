@@ -79,11 +79,6 @@ if ($route === 'profile/settings' && $method === 'GET') {
     exit;
 }
 
-if ($route === 'profile/settings/add-account' && $method === 'POST') {
-    $profileController->addAccount();
-    exit;
-}
-
 if ($route === 'profile/settings/edit-account' && $method === 'POST') {
     $profileController->editAccount();
     exit;
