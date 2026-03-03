@@ -5,6 +5,7 @@ declare(strict_types=1);
 class User
 {
     private PDO $db;
+    private bool $profileTableRepairAttempted = false;
 
     public function __construct()
     {
@@ -160,6 +161,36 @@ class User
 
     private function ensureProfileTable(): void
     {
+        try {
+            $this->createOrUpdateProfileTable();
+        } catch (PDOException $exception) {
+            if (!$this->shouldRebuildProfileTable($exception) || $this->profileTableRepairAttempted) {
+                throw $exception;
+            }
+
+            $this->profileTableRepairAttempted = true;
+            $this->rebuildProfileTable();
+
+            try {
+                $this->createOrUpdateProfileTable();
+            } catch (PDOException $retryException) {
+                if (!$this->shouldRebuildProfileTable($retryException)) {
+                    throw $retryException;
+                }
+
+                $cleanupAttempted = $this->cleanupOrphanProfileTablespaceFiles();
+
+                if (!$cleanupAttempted) {
+                    throw $retryException;
+                }
+
+                $this->createOrUpdateProfileTable();
+            }
+        }
+    }
+
+    private function createOrUpdateProfileTable(): void
+    {
         $userIdType = $this->resolveUsersIdColumnType();
 
         $this->db->exec(
@@ -224,6 +255,70 @@ class User
              LEFT JOIN user_profiles up ON up.user_id = u.id
              WHERE up.user_id IS NULL'
         );
+    }
+
+    private function shouldRebuildProfileTable(PDOException $exception): bool
+    {
+        $errorCode = $exception->errorInfo[1] ?? null;
+
+        if ((int)$errorCode === 1932 || (int)$errorCode === 1813) {
+            return true;
+        }
+
+        $message = strtolower($exception->getMessage());
+        $isMissingInEngine = str_contains($message, 'user_profiles') && str_contains($message, "doesn't exist in engine");
+        $isTablespaceConflict = str_contains($message, 'user_profiles') && str_contains($message, 'tablespace for table') && str_contains($message, 'exists');
+
+        return $isMissingInEngine || $isTablespaceConflict;
+    }
+
+    private function rebuildProfileTable(): void
+    {
+        try {
+            $this->db->exec('SET FOREIGN_KEY_CHECKS=0');
+            $this->db->exec('DROP TABLE IF EXISTS user_profiles');
+        } finally {
+            $this->db->exec('SET FOREIGN_KEY_CHECKS=1');
+        }
+    }
+
+    private function cleanupOrphanProfileTablespaceFiles(): bool
+    {
+        $statement = $this->db->query('SELECT @@datadir AS datadir, DATABASE() AS database_name');
+        $result = $statement->fetch();
+
+        $datadir = is_array($result) ? (string)($result['datadir'] ?? '') : '';
+        $databaseName = is_array($result) ? (string)($result['database_name'] ?? '') : '';
+
+        if ($datadir === '' || $databaseName === '') {
+            return false;
+        }
+
+        $basePath = rtrim($datadir, "\\/") . DIRECTORY_SEPARATOR . $databaseName . DIRECTORY_SEPARATOR;
+        $candidateFiles = [
+            $basePath . 'user_profiles.ibd',
+            $basePath . 'user_profiles.cfg',
+            $basePath . 'user_profiles.frm',
+        ];
+
+        $removedAnyFile = false;
+
+        foreach ($candidateFiles as $filePath) {
+            if (!file_exists($filePath)) {
+                continue;
+            }
+
+            if (@unlink($filePath)) {
+                $removedAnyFile = true;
+                continue;
+            }
+
+            if (!file_exists($filePath)) {
+                $removedAnyFile = true;
+            }
+        }
+
+        return $removedAnyFile;
     }
 
     private function resolveUsersIdColumnType(): string
