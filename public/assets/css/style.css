@@ -26,6 +26,7 @@ body {
     align-items: center;
     background: #0f172a;
     border-bottom: 1px solid #1e293b;
+    z-index: 1000;
 }
 
 .nav-brand {
