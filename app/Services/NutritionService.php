@@ -24,6 +24,9 @@ class NutritionService
         'peanut butter' => ['calories' => 588, 'protein' => 25, 'carbs' => 20, 'fat' => 50],
         'milk' => ['calories' => 61, 'protein' => 3.2, 'carbs' => 4.8, 'fat' => 3.3],
         'yogurt' => ['calories' => 59, 'protein' => 10, 'carbs' => 3.6, 'fat' => 0.4],
+        // Common desserts
+        'tiramisu' => ['calories' => 350, 'protein' => 6, 'carbs' => 34, 'fat' => 22],
+        'tiramisu cake' => ['calories' => 350, 'protein' => 6, 'carbs' => 34, 'fat' => 22],
         'cheese' => ['calories' => 402, 'protein' => 25, 'carbs' => 1.3, 'fat' => 33],
         'sweet potato' => ['calories' => 86, 'protein' => 1.6, 'carbs' => 20, 'fat' => 0.1],
         'peas' => ['calories' => 81, 'protein' => 5.4, 'carbs' => 14, 'fat' => 0.4],

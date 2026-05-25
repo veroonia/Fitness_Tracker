@@ -12,21 +12,30 @@ const cardProteinValue = document.getElementById('cardProteinValue');
 const cardCarbsValue = document.getElementById('cardCarbsValue');
 const cardFatValue = document.getElementById('cardFatValue');
 const dashboardLogoutBtn = document.getElementById('dashboardLogoutBtn');
+const dailyGoalCalories = Number(window.APP_CURRENT_USER?.daily_goal_calories ?? 0) || null;
+
+function formatCalories(calories) {
+    if (dailyGoalCalories) {
+        return `${calories} / ${dailyGoalCalories} kcal`;
+    }
+
+    return `${calories} kcal`;
+}
 
 function renderTotals(totals) {
-    totalCaloriesValue.textContent = totals.calories;
+    totalCaloriesValue.textContent = formatCalories(totals.calories);
     totalProteinValue.textContent = `${totals.protein_g}g`;
     totalCarbsValue.textContent = `${totals.carbs_g}g`;
     totalFatValue.textContent = `${totals.fat_g}g`;
 
-    cardCaloriesValue.textContent = `${totals.calories} kcal`;
+    cardCaloriesValue.textContent = formatCalories(totals.calories);
     cardProteinValue.textContent = `${totals.protein_g} g`;
     cardCarbsValue.textContent = `${totals.carbs_g} g`;
     cardFatValue.textContent = `${totals.fat_g} g`;
 }
 
 function prependMeal(entry) {
-    const emptyRow = mealLogBody.querySelector('td[colspan="5"]');
+    const emptyRow = mealLogBody.querySelector('td[colspan="6"]');
     if (emptyRow) {
         mealLogBody.innerHTML = '';
     }
@@ -38,7 +47,11 @@ function prependMeal(entry) {
         <td>${entry.protein_g} g</td>
         <td>${entry.carbs_g} g</td>
         <td>${entry.fat_g} g</td>
+        <td><button class="delete-btn btn-ghost" data-id="${entry.id}" type="button">Delete</button></td>
     `;
+    if (entry.id) {
+        row.setAttribute('data-id', entry.id);
+    }
 
     mealLogBody.prepend(row);
 }
@@ -78,6 +91,58 @@ foodLogForm.addEventListener('submit', async function (event) {
         foodLogForm.reset();
     } catch (error) {
         foodLogError.textContent = 'Server error while logging food.';
+    }
+});
+
+// Delegate delete button clicks
+mealLogBody.addEventListener('click', async function (event) {
+    const btn = event.target.closest ? event.target.closest('.delete-btn') : null;
+    if (!btn) return;
+
+    const id = btn.getAttribute('data-id');
+    if (!id) return;
+
+    if (!confirm('Delete this meal entry?')) return;
+
+    try {
+        const body = new URLSearchParams({ id });
+        const resp = await fetch('index.php?route=dashboard/delete-food', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        });
+
+        const text = await resp.text();
+        let data = null;
+        try {
+            data = JSON.parse(text);
+        } catch (parseErr) {
+            console.error('Delete response parse error:', parseErr, 'raw:', text);
+            alert('Server returned unexpected response: ' + (text || resp.statusText));
+            return;
+        }
+
+        if (!resp.ok || !data.success) {
+            alert(data.message || 'Unable to delete meal.');
+            return;
+        }
+
+        // Remove the row from DOM
+        const row = btn.closest('tr');
+        if (row) row.remove();
+
+        // If no rows left, show the empty state
+        if (!mealLogBody.querySelector('tr')) {
+            mealLogBody.innerHTML = '<tr><td colspan="6">No meals logged yet.</td></tr>';
+        }
+
+        // Update totals
+        if (data.totals) {
+            renderTotals(data.totals);
+        }
+    } catch (err) {
+        console.error('Delete request failed:', err);
+        //alert('Server error while deleting meal. It may have succeeded—check the list or refresh to confirm.');
     }
 });
 

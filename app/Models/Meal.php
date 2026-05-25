@@ -102,4 +102,10 @@ class Meal
 
         return $statement->execute(['user_id' => $userId]);
     }
+
+    public function deleteById(int $mealId, int $userId): bool
+    {
+        $statement = $this->db->prepare('DELETE FROM meals WHERE id = :id AND user_id = :user_id');
+        return $statement->execute(['id' => $mealId, 'user_id' => $userId]);
+    }
 }
