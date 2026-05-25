@@ -27,7 +27,7 @@ class GoalController
         $extraStyleFile = 'public/assets/css/goal.css';
 
         require __DIR__ . '/../Views/layouts/header.php';
-        require __DIR__ . '/../Views/goals/select.php';
+        require __DIR__ . '/../Views/select.php';
         require __DIR__ . '/../Views/layouts/footer.php';
     }
 

@@ -33,7 +33,7 @@ class DashboardController
         $extraStyleFile = 'public/assets/css/dashboard.css';
 
         require __DIR__ . '/../Views/layouts/header.php';
-        require __DIR__ . '/../Views/dashboard/index.php';
+        require __DIR__ . '/../Views/dashboard.php';
         require __DIR__ . '/../Views/layouts/footer.php';
     }
 
