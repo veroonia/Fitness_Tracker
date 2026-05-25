@@ -66,6 +66,36 @@ class Meal
         ];
     }
 
+    public function totalsByUserForDate(int $userId, ?string $date = null): array
+    {
+        // If no date provided, use today's date
+        $date = $date ?: date('Y-m-d');
+
+        $statement = $this->db->prepare(
+            'SELECT
+                COALESCE(SUM(calories), 0) AS calories,
+                COALESCE(SUM(protein_g), 0) AS protein_g,
+                COALESCE(SUM(carbs_g), 0) AS carbs_g,
+                COALESCE(SUM(fat_g), 0) AS fat_g
+             FROM meals
+             WHERE user_id = :user_id
+             AND DATE(created_at) = :target_date'
+        );
+        $statement->execute([
+            'user_id' => $userId,
+            'target_date' => $date,
+        ]);
+
+        $totals = $statement->fetch();
+
+        return [
+            'calories' => round((float)($totals['calories'] ?? 0), 1),
+            'protein_g' => round((float)($totals['protein_g'] ?? 0), 1),
+            'carbs_g' => round((float)($totals['carbs_g'] ?? 0), 1),
+            'fat_g' => round((float)($totals['fat_g'] ?? 0), 1),
+        ];
+    }
+
     public function deleteByUser(int $userId): bool
     {
         $statement = $this->db->prepare('DELETE FROM meals WHERE user_id = :user_id');

@@ -317,3 +317,45 @@ loginForm.addEventListener('submit', async function (event) {
 
 updateAuthUI();
 restoreFormValues();
+
+// Calories today input handling (numeric) and remaining calculation
+const TODAY_CALORIES_KEY = 'fittrack-today-calories';
+const todayInput = document.getElementById('todayCaloriesInput');
+const goalValueEl = document.getElementById('calorieGoalValue');
+const remainingEl = document.getElementById('calorieRemaining');
+
+function parseNumber(v) {
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : 0;
+}
+
+function updateRemainingDisplay() {
+    if (!remainingEl) return;
+    const goal = goalValueEl ? parseNumber(goalValueEl.textContent) : 0;
+    const today = todayInput ? parseNumber(todayInput.value) : 0;
+    const remaining = Math.max(0, Math.round((goal - today) * 10) / 10);
+    remainingEl.textContent = remaining.toString();
+}
+
+if (todayInput) {
+    // initialize from session user or localStorage
+    const saved = localStorage.getItem(TODAY_CALORIES_KEY);
+    if (saved !== null) {
+        todayInput.value = saved;
+    } else if (currentUser && typeof currentUser.calories_today !== 'undefined') {
+        todayInput.value = String(parseNumber(currentUser.calories_today));
+    }
+
+    todayInput.addEventListener('input', function () {
+        const val = todayInput.value === '' ? '0' : todayInput.value;
+        localStorage.setItem(TODAY_CALORIES_KEY, val);
+        updateRemainingDisplay();
+    });
+}
+
+// Ensure goal value is shown as plain number (no units)
+if (goalValueEl && currentUser && typeof currentUser.calorie_goal !== 'undefined') {
+    goalValueEl.textContent = String(parseNumber(currentUser.calorie_goal));
+}
+
+updateRemainingDisplay();
