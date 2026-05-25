@@ -64,6 +64,11 @@ if ($route === 'dashboard/log-food' && $method === 'POST') {
     exit;
 }
 
+if ($route === 'dashboard/delete-food' && $method === 'POST') {
+    $dashboardController->deleteFood();
+    exit;
+}
+
 if ($route === 'profile' && $method === 'GET') {
     $profileController->index();
     exit;

@@ -10,6 +10,13 @@
     </aside>
 
     <section class="dash-content">
+        <?php
+        $currentCalories = (float)($totals['calories'] ?? 0);
+        $dailyGoalCalories = isset($currentUser['daily_goal_calories']) ? (int)$currentUser['daily_goal_calories'] : null;
+        $calorieSummary = $dailyGoalCalories !== null
+            ? number_format($currentCalories, 0) . ' / ' . number_format((float)$dailyGoalCalories, 0) . ' kcal'
+            : number_format($currentCalories, 0) . ' kcal';
+        ?>
         <header class="dash-topbar">
             <div class="user-pill">
                 <div class="avatar-circle"><?php echo strtoupper(substr((string)($currentUser['username'] ?? 'U'), 0, 1)); ?></div>
@@ -28,19 +35,16 @@
         <div class="dash-grid">
             <section class="dash-hero">
                 <h3>Daily Nutrition Overview</h3>
-                <p>Log your food and we calculate macros using nutrition API.</p>
-                <div class="hero-kcal"><span id="totalCaloriesValue"><?php echo htmlspecialchars((string)$totals['calories'], ENT_QUOTES, 'UTF-8'); ?></span> kcal</div>
+                <p>Log your food and track calories against your daily goal.</p>
+                <div class="hero-kcal"><span id="totalCaloriesValue"><?php echo htmlspecialchars($calorieSummary, ENT_QUOTES, 'UTF-8'); ?></span></div>
                 <div class="hero-macros">
-                    <div><strong id="totalProteinValue"><?php echo htmlspecialchars((string)$totals['protein_g'], ENT_QUOTES, 'UTF-8'); ?>g</strong><small>Protein</small></div>
-                    <div><strong id="totalCarbsValue"><?php echo htmlspecialchars((string)$totals['carbs_g'], ENT_QUOTES, 'UTF-8'); ?>g</strong><small>Carbs</small></div>
-                    <div><strong id="totalFatValue"><?php echo htmlspecialchars((string)$totals['fat_g'], ENT_QUOTES, 'UTF-8'); ?>g</strong><small>Fat</small></div>
                 </div>
             </section>
 
             <section class="dash-targets">
                 <article class="target-card">
-                    <h4>Calories</h4>
-                    <p id="cardCaloriesValue"><?php echo htmlspecialchars((string)$totals['calories'], ENT_QUOTES, 'UTF-8'); ?> kcal</p>
+                    <h4>Calories Today</h4>
+                    <p id="cardCaloriesValue"><?php echo htmlspecialchars($calorieSummary, ENT_QUOTES, 'UTF-8'); ?></p>
                 </article>
                 <article class="target-card">
                     <h4>Protein</h4>
@@ -70,26 +74,28 @@
                 <table class="result-table" aria-label="Meal logs">
                     <thead>
                         <tr>
-                            <th>Food</th>
-                            <th>Calories</th>
-                            <th>Protein</th>
-                            <th>Carbs</th>
-                            <th>Fat</th>
+                                <th>Food</th>
+                                <th>Calories</th>
+                                <th>Protein</th>
+                                <th>Carbs</th>
+                                <th>Fat</th>
+                                <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="mealLogBody">
                         <?php if (empty($recentMeals)): ?>
                             <tr>
-                                <td colspan="5">No meals logged yet.</td>
+                                <td colspan="6">No meals logged yet.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($recentMeals as $meal): ?>
-                                <tr>
+                                <tr data-id="<?php echo (int)$meal['id']; ?>">
                                     <td><?php echo htmlspecialchars((string)$meal['food_query'], ENT_QUOTES, 'UTF-8'); ?></td>
                                     <td><?php echo htmlspecialchars((string)$meal['calories'], ENT_QUOTES, 'UTF-8'); ?> kcal</td>
                                     <td><?php echo htmlspecialchars((string)$meal['protein_g'], ENT_QUOTES, 'UTF-8'); ?> g</td>
                                     <td><?php echo htmlspecialchars((string)$meal['carbs_g'], ENT_QUOTES, 'UTF-8'); ?> g</td>
                                     <td><?php echo htmlspecialchars((string)$meal['fat_g'], ENT_QUOTES, 'UTF-8'); ?> g</td>
+                                    <td><button class="delete-btn btn-ghost" data-id="<?php echo (int)$meal['id']; ?>" type="button">Delete</button></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
