@@ -152,6 +152,27 @@ class User
         ]);
     }
 
+    public function updateProfileMetrics(int $userId, float $heightCm, float $weightKg, float $bmi, int $age): bool
+    {
+        $this->ensureProfileRow($userId);
+        $statement = $this->db->prepare(
+            'UPDATE user_profiles
+             SET height_cm = :height_cm,
+                 weight_kg = :weight_kg,
+                 bmi = :bmi,
+                 age = :age
+             WHERE user_id = :id'
+        );
+
+        return $statement->execute([
+            'height_cm' => $heightCm,
+            'weight_kg' => $weightKg,
+            'bmi' => $bmi,
+            'age' => $age,
+            'id' => $userId,
+        ]);
+    }
+
     public function deleteById(int $userId): bool
     {
         $statement = $this->db->prepare('DELETE FROM users WHERE id = :id');

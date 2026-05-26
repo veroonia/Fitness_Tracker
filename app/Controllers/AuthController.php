@@ -40,15 +40,18 @@ class AuthController
             return;
         }
 
+        $this->savePostedProfileMetrics($createdUserId);
+        $createdUser = $this->users->findById($createdUserId);
+
         $_SESSION['user'] = [
             'id' => $createdUserId,
-            'username' => $username,
-            'email' => $email,
-            'goal_preference' => null,
-            'age' => null,
-            'height_cm' => null,
-            'weight_kg' => null,
-            'bmi' => null,
+            'username' => $createdUser['username'] ?? $username,
+            'email' => $createdUser['email'] ?? $email,
+            'goal_preference' => $createdUser['goal_preference'] ?? null,
+            'age' => $createdUser['age'] ?? null,
+            'height_cm' => $createdUser['height_cm'] ?? null,
+            'weight_kg' => $createdUser['weight_kg'] ?? null,
+            'bmi' => $createdUser['bmi'] ?? null,
         ];
 
         echo json_encode([
@@ -80,8 +83,16 @@ class AuthController
             return;
         }
 
+        $userId = (int)$user['id'];
+        if ($this->savePostedProfileMetrics($userId)) {
+            $freshUser = $this->users->findById($userId);
+            if ($freshUser !== null) {
+                $user = array_merge($user, $freshUser);
+            }
+        }
+
         $_SESSION['user'] = [
-            'id' => (int)$user['id'],
+            'id' => $userId,
             'username' => $user['username'],
             'email' => $user['email'],
             'goal_preference' => $user['goal_preference'] ?? null,
@@ -113,5 +124,53 @@ class AuthController
             'success' => true,
             'message' => 'Logged out.',
         ]);
+    }
+
+    private function savePostedProfileMetrics(int $userId): bool
+    {
+        $metrics = $this->postedProfileMetrics();
+        if ($metrics === null) {
+            return false;
+        }
+
+        return $this->users->updateProfileMetrics(
+            $userId,
+            $metrics['height_cm'],
+            $metrics['weight_kg'],
+            $metrics['bmi'],
+            $metrics['age']
+        );
+    }
+
+    private function postedProfileMetrics(): ?array
+    {
+        $ageRaw = trim((string)($_POST['age'] ?? ''));
+        $heightRaw = trim((string)($_POST['height_cm'] ?? ''));
+        $weightRaw = trim((string)($_POST['weight_kg'] ?? ''));
+
+        if ($ageRaw === '' || $heightRaw === '' || $weightRaw === '') {
+            return null;
+        }
+
+        if (!is_numeric($ageRaw) || !is_numeric($heightRaw) || !is_numeric($weightRaw)) {
+            return null;
+        }
+
+        $age = (int)$ageRaw;
+        $heightCm = (float)$heightRaw;
+        $weightKg = (float)$weightRaw;
+
+        if ($age < 10 || $age > 100 || $heightCm < 100 || $heightCm > 260 || $weightKg < 20 || $weightKg > 400) {
+            return null;
+        }
+
+        $heightM = $heightCm / 100;
+
+        return [
+            'age' => $age,
+            'height_cm' => $heightCm,
+            'weight_kg' => $weightKg,
+            'bmi' => round($weightKg / ($heightM * $heightM), 2),
+        ];
     }
 }

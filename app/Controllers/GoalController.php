@@ -44,6 +44,8 @@ class GoalController
         }
 
         $userId = (int)$this->sessionUser()['id'];
+        $this->savePostedProfileMetrics($userId);
+
         $updated = $this->users->updateGoalPreference($userId, $goal);
         if (!$updated) {
             http_response_code(500);
@@ -52,6 +54,19 @@ class GoalController
         }
 
         $_SESSION['user']['goal_preference'] = $goal;
+        $freshUser = $this->users->findById($userId);
+        if ($freshUser !== null) {
+            $_SESSION['user'] = [
+                'id' => (int)$freshUser['id'],
+                'username' => $freshUser['username'],
+                'email' => $freshUser['email'],
+                'goal_preference' => $freshUser['goal_preference'] ?? $goal,
+                'age' => $freshUser['age'] ?? null,
+                'height_cm' => $freshUser['height_cm'] ?? null,
+                'weight_kg' => $freshUser['weight_kg'] ?? null,
+                'bmi' => $freshUser['bmi'] ?? null,
+            ];
+        }
 
         echo json_encode([
             'success' => true,
@@ -76,5 +91,53 @@ class GoalController
     private function sessionUser(): array
     {
         return is_array($_SESSION['user'] ?? null) ? $_SESSION['user'] : [];
+    }
+
+    private function savePostedProfileMetrics(int $userId): bool
+    {
+        $metrics = $this->postedProfileMetrics();
+        if ($metrics === null) {
+            return false;
+        }
+
+        return $this->users->updateProfileMetrics(
+            $userId,
+            $metrics['height_cm'],
+            $metrics['weight_kg'],
+            $metrics['bmi'],
+            $metrics['age']
+        );
+    }
+
+    private function postedProfileMetrics(): ?array
+    {
+        $ageRaw = trim((string)($_POST['age'] ?? ''));
+        $heightRaw = trim((string)($_POST['height_cm'] ?? ''));
+        $weightRaw = trim((string)($_POST['weight_kg'] ?? ''));
+
+        if ($ageRaw === '' || $heightRaw === '' || $weightRaw === '') {
+            return null;
+        }
+
+        if (!is_numeric($ageRaw) || !is_numeric($heightRaw) || !is_numeric($weightRaw)) {
+            return null;
+        }
+
+        $age = (int)$ageRaw;
+        $heightCm = (float)$heightRaw;
+        $weightKg = (float)$weightRaw;
+
+        if ($age < 10 || $age > 100 || $heightCm < 100 || $heightCm > 260 || $weightKg < 20 || $weightKg > 400) {
+            return null;
+        }
+
+        $heightM = $heightCm / 100;
+
+        return [
+            'age' => $age,
+            'height_cm' => $heightCm,
+            'weight_kg' => $weightKg,
+            'bmi' => round($weightKg / ($heightM * $heightM), 2),
+        ];
     }
 }
