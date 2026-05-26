@@ -11,5 +11,8 @@
     <?php if (!empty($extraStyleFile)): ?>
         <link rel="stylesheet" href="<?php echo htmlspecialchars((string)$extraStyleFile, ENT_QUOTES, 'UTF-8'); ?>" />
     <?php endif; ?>
+    <?php foreach (($extraStyleFiles ?? []) as $styleFile): ?>
+        <link rel="stylesheet" href="<?php echo htmlspecialchars((string)$styleFile, ENT_QUOTES, 'UTF-8'); ?>" />
+    <?php endforeach; ?>
 </head>
 <body class="<?php echo htmlspecialchars($bodyClass ?? '', ENT_QUOTES, 'UTF-8'); ?>">

@@ -4,7 +4,7 @@
         <ul class="dash-nav-list">
             <li><a href="index.php?route=dashboard">Home</a></li>
             <li><a href="index.php?route=dashboard">Meals</a></li>
-            <li><a href="index.php?route=dashboard">Stats</a></li>
+            <li><a href="index.php?route=dashboard/stats">Stats</a></li>
             <li class="active"><a href="index.php?route=profile">Profile</a></li>
         </ul>
     </aside>

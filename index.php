@@ -59,6 +59,11 @@ if ($route === 'dashboard' && $method === 'GET') {
     exit;
 }
 
+if ($route === 'dashboard/stats' && $method === 'GET') {
+    $dashboardController->stats();
+    exit;
+}
+
 if ($route === 'dashboard/log-food' && $method === 'POST') {
     $dashboardController->logFood();
     exit;

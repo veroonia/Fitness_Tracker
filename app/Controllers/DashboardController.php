@@ -50,6 +50,51 @@ class DashboardController
         require __DIR__ . '/../Views/layouts/footer.php';
     }
 
+    public function stats(): void
+    {
+        $this->ensureAuthenticated();
+        $user = $this->fetchCurrentUser();
+        if ($user === null) {
+            header('Location: index.php?route=home');
+            exit;
+        }
+
+        if (($user['goal_preference'] ?? null) === null) {
+            header('Location: index.php?route=goals');
+            exit;
+        }
+
+        $requestedMonth = trim((string)($_GET['month'] ?? ''));
+        if (preg_match('/^\d{4}-\d{2}$/', $requestedMonth) === 1) {
+            $monthDate = DateTimeImmutable::createFromFormat('!Y-m-d', $requestedMonth . '-01');
+        } else {
+            $monthDate = new DateTimeImmutable('first day of this month');
+        }
+
+        if (!$monthDate) {
+            $monthDate = new DateTimeImmutable('first day of this month');
+        }
+
+        $year = (int)$monthDate->format('Y');
+        $month = (int)$monthDate->format('m');
+        $currentUser = $user;
+        $monthLabel = $monthDate->format('F Y');
+        $previousMonth = $monthDate->modify('-1 month')->format('Y-m');
+        $nextMonth = $monthDate->modify('+1 month')->format('Y-m');
+        $dailyCalories = $this->meals->calorieTotalsByUserForMonth((int)$user['id'], $year, $month);
+        $calendarWeeks = $this->buildCalendarWeeks($monthDate, $dailyCalories);
+
+        $title = 'Stats - FitTrack Studio';
+        $scriptFile = 'public/assets/js/stats.js';
+        $bodyClass = 'page-dashboard';
+        $extraStyleFile = 'public/assets/css/dashboard.css';
+        $extraStyleFiles = ['public/assets/css/stats.css'];
+
+        require __DIR__ . '/../Views/layouts/header.php';
+        require __DIR__ . '/../Views/dashboard_stats.php';
+        require __DIR__ . '/../Views/layouts/footer.php';
+    }
+
     public function logFood(): void
     {
         header('Content-Type: application/json');
@@ -237,5 +282,32 @@ class DashboardController
         }
 
         return (int)(round(($maintenance * 1.10) / 10) * 10);
+    }
+
+    private function buildCalendarWeeks(DateTimeImmutable $monthDate, array $dailyCalories): array
+    {
+        $monthStart = $monthDate->modify('first day of this month');
+        $monthEnd = $monthDate->modify('last day of this month');
+        $calendarStart = $monthStart->modify('-' . (int)$monthStart->format('w') . ' days');
+        $calendarEnd = $monthEnd->modify('+' . (6 - (int)$monthEnd->format('w')) . ' days');
+
+        $weeks = [];
+        $week = [];
+        for ($day = $calendarStart; $day <= $calendarEnd; $day = $day->modify('+1 day')) {
+            $dateKey = $day->format('Y-m-d');
+            $week[] = [
+                'date' => $dateKey,
+                'day' => $day->format('j'),
+                'is_current_month' => $day->format('Y-m') === $monthDate->format('Y-m'),
+                'calories' => $dailyCalories[$dateKey] ?? null,
+            ];
+
+            if (count($week) === 7) {
+                $weeks[] = $week;
+                $week = [];
+            }
+        }
+
+        return $weeks;
     }
 }

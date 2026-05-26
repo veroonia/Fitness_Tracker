@@ -1,0 +1,137 @@
+body.page-dashboard {
+    background:
+        radial-gradient(circle at top left, rgba(99, 102, 241, 0.14), transparent 32rem),
+        #0f172a;
+}
+
+.stats-panel {
+    overflow: hidden;
+    background: #111827;
+    border: 1px solid #243044;
+    border-radius: 14px;
+    box-shadow: 0 18px 42px rgba(2, 6, 23, 0.24);
+}
+
+.stats-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #243044;
+    background: #131c2e;
+}
+
+.stats-header h3 {
+    color: #f8fafc;
+    font-size: 1.35rem;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.stats-header .btn-ghost {
+    min-width: 104px;
+    text-align: center;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-weekdays {
+    background: #0f172a;
+    border-bottom: 1px solid #243044;
+}
+
+.calendar-weekdays div {
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 12px 10px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.calendar-days {
+    background: #243044;
+    gap: 1px;
+}
+
+.calendar-day {
+    position: relative;
+    min-height: 118px;
+    background: #0f172a;
+    padding: 12px;
+}
+
+.calendar-day.muted {
+    background: #121a2a;
+}
+
+.calendar-date {
+    display: inline-grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 50%;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.calendar-day.muted .calendar-date {
+    color: #64748b;
+}
+
+.calendar-day strong {
+    display: block;
+    width: fit-content;
+    margin-top: 16px;
+    border: 1px solid #4f46e5;
+    border-radius: 8px;
+    background: rgba(99, 102, 241, 0.18);
+    color: #f8fafc;
+    font-size: 0.9rem;
+    font-weight: 800;
+    padding: 7px 9px;
+}
+
+.calendar-day:has(strong) .calendar-date {
+    background: #6366f1;
+    color: #ffffff;
+}
+
+@media (max-width: 740px) {
+    .stats-header {
+        grid-template-columns: 1fr;
+        padding: 14px;
+    }
+
+    .stats-header .btn-ghost {
+        width: 100%;
+    }
+
+    .calendar-weekdays div {
+        font-size: 0.66rem;
+        padding: 8px 2px;
+    }
+
+    .calendar-day {
+        min-height: 82px;
+        padding: 6px;
+    }
+
+    .calendar-date {
+        width: 24px;
+        height: 24px;
+        font-size: 0.78rem;
+    }
+
+    .calendar-day strong {
+        margin-top: 10px;
+        font-size: 0.7rem;
+        padding: 4px 5px;
+    }
+}

@@ -54,6 +54,10 @@ body.page-dashboard {
     color: #f8fafc;
 }
 
+.dash-nav-list li.active a {
+    color: #f8fafc;
+}
+
 .dash-content {
     padding: 28px;
 }
@@ -193,6 +197,80 @@ body.page-dashboard {
     padding: 20px;
 }
 
+.stats-panel {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.stats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.stats-header h3 {
+    font-size: 1.25rem;
+    text-align: center;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-weekdays {
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 1px solid #1f2937;
+}
+
+.calendar-weekdays div {
+    padding: 0 10px 10px;
+}
+
+.calendar-days {
+    gap: 1px;
+    background: #1f2937;
+    border: 1px solid #1f2937;
+    border-top: 0;
+}
+
+.calendar-day {
+    min-height: 112px;
+    background: #0f172a;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calendar-day.muted {
+    background: #111827;
+    color: #475569;
+}
+
+.calendar-date {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.calendar-day strong {
+    width: fit-content;
+    border-radius: 8px;
+    background: #192338;
+    border: 1px solid #2c3a57;
+    color: #f8fafc;
+    font-size: 0.9rem;
+    padding: 6px 8px;
+}
+
 .food-log-panel h3 {
     font-size: 1.1rem;
     margin-bottom: 6px;
@@ -263,5 +341,30 @@ body.page-dashboard {
     .hero-macros,
     .dash-targets {
         grid-template-columns: 1fr;
+    }
+
+    .stats-panel {
+        padding: 14px;
+    }
+
+    .stats-header {
+        align-items: stretch;
+    }
+
+    .calendar-weekdays div {
+        padding: 0 4px 8px;
+        font-size: 0.68rem;
+        text-align: center;
+    }
+
+    .calendar-day {
+        min-height: 76px;
+        padding: 6px;
+        gap: 8px;
+    }
+
+    .calendar-day strong {
+        font-size: 0.75rem;
+        padding: 4px 5px;
     }
 }
