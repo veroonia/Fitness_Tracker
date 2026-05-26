@@ -96,6 +96,35 @@ class Meal
         ];
     }
 
+    public function calorieTotalsByUserForMonth(int $userId, int $year, int $month): array
+    {
+        $monthStart = sprintf('%04d-%02d-01', $year, $month);
+        $monthEnd = date('Y-m-t', strtotime($monthStart));
+
+        $statement = $this->db->prepare(
+            'SELECT
+                DATE(created_at) AS meal_date,
+                COALESCE(SUM(calories), 0) AS calories
+             FROM meals
+             WHERE user_id = :user_id
+             AND DATE(created_at) BETWEEN :month_start AND :month_end
+             GROUP BY DATE(created_at)
+             ORDER BY meal_date ASC'
+        );
+        $statement->execute([
+            'user_id' => $userId,
+            'month_start' => $monthStart,
+            'month_end' => $monthEnd,
+        ]);
+
+        $totals = [];
+        foreach ($statement->fetchAll() ?: [] as $row) {
+            $totals[(string)$row['meal_date']] = round((float)$row['calories'], 1);
+        }
+
+        return $totals;
+    }
+
     public function deleteByUser(int $userId): bool
     {
         $statement = $this->db->prepare('DELETE FROM meals WHERE user_id = :user_id');
