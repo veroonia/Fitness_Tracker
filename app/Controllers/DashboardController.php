@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 class DashboardController
 {
+    private User $users;
     private Meal $meals;
     private NutritionService $nutrition;
 
     public function __construct()
     {
+        $this->users = new User();
         $this->meals = new Meal();
         $this->nutrition = new NutritionService();
     }
@@ -16,7 +18,12 @@ class DashboardController
     public function index(): void
     {
         $this->ensureAuthenticated();
-        $user = $this->sessionUser();
+        $user = $this->fetchCurrentUser();
+        if ($user === null) {
+            header('Location: index.php?route=home');
+            exit;
+        }
+
         $dailyGoalCalories = $this->calculateDailyGoalCalories($user);
 
         if ($dailyGoalCalories !== null) {
@@ -30,6 +37,7 @@ class DashboardController
 
         $currentUser = $user;
         $totals = $this->meals->totalsByUserForDate((int)$user['id']);
+        $currentUser['calories_today'] = $totals['calories'] ?? 0.0;
         $recentMeals = $this->meals->latestByUser((int)$user['id']);
 
         $title = 'Dashboard - FitTrack Studio';
@@ -178,6 +186,32 @@ class DashboardController
     private function sessionUser(): array
     {
         return is_array($_SESSION['user'] ?? null) ? $_SESSION['user'] : [];
+    }
+
+    private function fetchCurrentUser(): ?array
+    {
+        $userId = (int)($this->sessionUser()['id'] ?? 0);
+        if ($userId <= 0) {
+            return null;
+        }
+
+        $user = $this->users->findById($userId);
+        if ($user === null) {
+            return null;
+        }
+
+        $_SESSION['user'] = [
+            'id' => (int)$user['id'],
+            'username' => $user['username'],
+            'email' => $user['email'],
+            'goal_preference' => $user['goal_preference'] ?? null,
+            'age' => $user['age'] ?? null,
+            'height_cm' => $user['height_cm'] ?? null,
+            'weight_kg' => $user['weight_kg'] ?? null,
+            'bmi' => $user['bmi'] ?? null,
+        ];
+
+        return $_SESSION['user'];
     }
 
     private function calculateDailyGoalCalories(array $user): ?int

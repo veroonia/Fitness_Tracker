@@ -14,24 +14,37 @@ const cardFatValue = document.getElementById('cardFatValue');
 const dashboardLogoutBtn = document.getElementById('dashboardLogoutBtn');
 const dailyGoalCalories = Number(window.APP_CURRENT_USER?.daily_goal_calories ?? 0) || null;
 
+function formatNumber(value) {
+    const number = Number(value) || 0;
+    return Number.isInteger(number) ? String(number) : number.toFixed(1);
+}
+
 function formatCalories(calories) {
+    const todayCalories = formatNumber(calories);
+
     if (dailyGoalCalories) {
-        return `${calories} / ${dailyGoalCalories} kcal`;
+        return `${todayCalories} / ${dailyGoalCalories} kcal`;
     }
 
-    return `${calories} kcal`;
+    return `${todayCalories} kcal`;
 }
 
 function renderTotals(totals) {
     totalCaloriesValue.textContent = formatCalories(totals.calories);
-    totalProteinValue.textContent = `${totals.protein_g}g`;
-    totalCarbsValue.textContent = `${totals.carbs_g}g`;
-    totalFatValue.textContent = `${totals.fat_g}g`;
+    if (totalProteinValue) {
+        totalProteinValue.textContent = `${formatNumber(totals.protein_g)}g`;
+    }
+    if (totalCarbsValue) {
+        totalCarbsValue.textContent = `${formatNumber(totals.carbs_g)}g`;
+    }
+    if (totalFatValue) {
+        totalFatValue.textContent = `${formatNumber(totals.fat_g)}g`;
+    }
 
     cardCaloriesValue.textContent = formatCalories(totals.calories);
-    cardProteinValue.textContent = `${totals.protein_g} g`;
-    cardCarbsValue.textContent = `${totals.carbs_g} g`;
-    cardFatValue.textContent = `${totals.fat_g} g`;
+    cardProteinValue.textContent = `${formatNumber(totals.protein_g)} g`;
+    cardCarbsValue.textContent = `${formatNumber(totals.carbs_g)} g`;
+    cardFatValue.textContent = `${formatNumber(totals.fat_g)} g`;
 }
 
 function prependMeal(entry) {
