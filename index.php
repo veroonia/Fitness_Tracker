@@ -13,6 +13,7 @@ require_once __DIR__ . '/app/Controllers/HomeController.php';
 require_once __DIR__ . '/app/Controllers/AuthController.php';
 require_once __DIR__ . '/app/Controllers/GoalController.php';
 require_once __DIR__ . '/app/Controllers/DashboardController.php';
+require_once __DIR__ . '/app/Controllers/MealsController.php';
 require_once __DIR__ . '/app/Controllers/ProfileController.php';
 
 $route = $_GET['route'] ?? '';
@@ -22,6 +23,7 @@ $homeController = new HomeController();
 $authController = new AuthController();
 $goalController = new GoalController();
 $dashboardController = new DashboardController();
+$mealsController = new MealsController();
 $profileController = new ProfileController();
 
 if ($route === '' || $route === 'home') {
@@ -56,6 +58,11 @@ if ($route === 'goals/save' && $method === 'POST') {
 
 if ($route === 'dashboard' && $method === 'GET') {
     $dashboardController->index();
+    exit;
+}
+
+if ($route === 'meals' && $method === 'GET') {
+    $mealsController->index();
     exit;
 }
 

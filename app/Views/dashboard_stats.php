@@ -3,7 +3,7 @@
         <div class="dash-logo">FT</div>
         <ul class="dash-nav-list">
             <li><a href="index.php?route=dashboard">Home</a></li>
-            <li><a href="index.php?route=dashboard">Meals</a></li>
+            <li><a href="index.php?route=meals">Meals</a></li>
             <li class="active">Stats</li>
             <li><a href="index.php?route=profile">Profile</a></li>
         </ul>
