@@ -12,7 +12,82 @@ const cardProteinValue = document.getElementById('cardProteinValue');
 const cardCarbsValue = document.getElementById('cardCarbsValue');
 const cardFatValue = document.getElementById('cardFatValue');
 const dashboardLogoutBtn = document.getElementById('dashboardLogoutBtn');
-const dailyGoalCalories = Number(window.APP_CURRENT_USER?.daily_goal_calories ?? 0) || null;
+let dailyGoalCalories = Number(window.APP_CURRENT_USER?.daily_goal_calories ?? 0) || null;
+const FITTRACK_FORM_STORAGE_KEY = 'fittrack-form-values';
+
+function roundCalories(value) {
+    return Math.round(value / 10) * 10;
+}
+
+function getStoredCalculatorValues() {
+    const raw = localStorage.getItem(FITTRACK_FORM_STORAGE_KEY);
+    if (!raw) {
+        return null;
+    }
+
+    try {
+        const values = JSON.parse(raw);
+        if (!values || typeof values !== 'object') {
+            return null;
+        }
+
+        const age = Number(values.age);
+        const heightCm = Number(values.height);
+        const weightKg = Number(values.weight);
+        const sex = String(values.sex || '').trim();
+        const activityFactor = Number(values.activity);
+
+        if (!age || !heightCm || !weightKg || !sex || !activityFactor) {
+            return null;
+        }
+
+        return {
+            age,
+            heightCm,
+            weightKg,
+            sex,
+            activityFactor
+        };
+    } catch (error) {
+        return null;
+    }
+}
+
+function calculateMaintenanceCalories(profile) {
+    if (profile.sex === 'male') {
+        return roundCalories(((10 * profile.weightKg) + (6.25 * profile.heightCm) - (5 * profile.age) + 5) * profile.activityFactor);
+    }
+
+    if (profile.sex === 'female') {
+        return roundCalories(((10 * profile.weightKg) + (6.25 * profile.heightCm) - (5 * profile.age) - 161) * profile.activityFactor);
+    }
+
+    const maleBmr = (10 * profile.weightKg) + (6.25 * profile.heightCm) - (5 * profile.age) + 5;
+    const femaleBmr = (10 * profile.weightKg) + (6.25 * profile.heightCm) - (5 * profile.age) - 161;
+    return roundCalories((((maleBmr + femaleBmr) / 2) * profile.activityFactor));
+}
+
+function calculateGoalCalories(profile, goal) {
+    const maintenanceCalories = calculateMaintenanceCalories(profile);
+    const caloriesPerKg = 7700;
+    const goalOffsets = {
+        maintain: 0,
+        loss_mild: -(caloriesPerKg * 0.25 / 7),
+        loss: -(caloriesPerKg * 0.5 / 7),
+        loss_extreme: -(caloriesPerKg * 1 / 7),
+        gain_mild: caloriesPerKg * 0.25 / 7,
+        gain: caloriesPerKg * 0.5 / 7,
+        gain_fast: caloriesPerKg * 1 / 7,
+        deficit: -(caloriesPerKg * 0.5 / 7)
+    };
+
+    return roundCalories(maintenanceCalories + (goalOffsets[goal] ?? 0));
+}
+
+const storedCalculatorValues = getStoredCalculatorValues();
+if (storedCalculatorValues && window.APP_CURRENT_USER?.goal_preference) {
+    dailyGoalCalories = calculateGoalCalories(storedCalculatorValues, window.APP_CURRENT_USER.goal_preference);
+}
 
 function formatNumber(value) {
     const number = Number(value) || 0;

@@ -94,15 +94,15 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Huge Deficit (aggressive fat loss)</td>
+                            <td>Extreme Weight Loss (1 kg/week)</td>
                             <td id="hugeDeficitText">-</td>
                         </tr>
                         <tr>
-                            <td>Moderate Deficit (steady fat loss)</td>
+                            <td>Weight Loss (0.5 kg/week)</td>
                             <td id="moderateDeficitText">-</td>
                         </tr>
                         <tr>
-                            <td>Mild Deficit (easy fat loss)</td>
+                            <td>Mild Weight Loss (0.25 kg/week)</td>
                             <td id="mildDeficitText">-</td>
                         </tr>
                         <tr>
@@ -110,11 +110,11 @@
                             <td id="maintenanceText">-</td>
                         </tr>
                         <tr>
-                            <td>Lean Gain (small surplus)</td>
+                            <td>Mild Weight Gain (0.25 kg/week)</td>
                             <td id="leanGainText">-</td>
                         </tr>
                         <tr>
-                            <td>Aggressive Gain (bigger surplus)</td>
+                            <td>Fast Weight Gain (1 kg/week)</td>
                             <td id="aggressiveGainText">-</td>
                         </tr>
                     </tbody>

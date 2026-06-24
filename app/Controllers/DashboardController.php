@@ -261,6 +261,8 @@ class DashboardController
             'username' => $user['username'],
             'email' => $user['email'],
             'goal_preference' => $user['goal_preference'] ?? null,
+            'sex' => $user['sex'] ?? null,
+            'activity_factor' => $user['activity_factor'] ?? null,
             'age' => $user['age'] ?? null,
             'height_cm' => $user['height_cm'] ?? null,
             'weight_kg' => $user['weight_kg'] ?? null,
@@ -275,21 +277,35 @@ class DashboardController
         $age = isset($user['age']) ? (int)$user['age'] : null;
         $heightCm = isset($user['height_cm']) ? (float)$user['height_cm'] : null;
         $weightKg = isset($user['weight_kg']) ? (float)$user['weight_kg'] : null;
+        $sex = isset($user['sex']) ? strtolower((string)$user['sex']) : null;
+        $activityFactor = isset($user['activity_factor']) ? (float)$user['activity_factor'] : null;
         $goal = $user['goal_preference'] ?? null;
 
         if ($age === null || $heightCm === null || $weightKg === null || $goal === null) {
             return null;
         }
 
-        $bmrMale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) + 5;
-        $bmrFemale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) - 161;
-        $bmrAvg = ($bmrMale + $bmrFemale) / 2.0;
-
-        $activityFactor = 1.55;
-        $maintenance = (int)(round(($bmrAvg * $activityFactor) / 10) * 10);
+        $maintenance = $this->calculateMaintenanceCalories($age, $heightCm, $weightKg, $sex, $activityFactor);
 
         $adjustment = self::GOAL_KCAL_ADJUSTMENTS[$goal] ?? self::GOAL_KCAL_ADJUSTMENTS['maintain'];
         return (int)(round(($maintenance + $adjustment) / 10) * 10);
+    }
+
+    private function calculateMaintenanceCalories(int $age, float $heightCm, float $weightKg, ?string $sex, ?float $activityFactor): int
+    {
+        $activity = $activityFactor !== null ? $activityFactor : 1.55;
+
+        if ($sex === 'male') {
+            $bmr = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) + 5;
+        } elseif ($sex === 'female') {
+            $bmr = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) - 161;
+        } else {
+            $bmrMale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) + 5;
+            $bmrFemale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) - 161;
+            $bmr = ($bmrMale + $bmrFemale) / 2.0;
+        }
+
+        return (int)(round(($bmr * $activity) / 10) * 10);
     }
 
     private function buildCalendarWeeks(DateTimeImmutable $monthDate, array $dailyCalories): array

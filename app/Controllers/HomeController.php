@@ -37,17 +37,12 @@ class HomeController
                 $age = isset($userSession['age']) ? (int)$userSession['age'] : null;
                 $heightCm = isset($userSession['height_cm']) ? (float)$userSession['height_cm'] : null;
                 $weightKg = isset($userSession['weight_kg']) ? (float)$userSession['weight_kg'] : null;
+                $sex = isset($userSession['sex']) ? strtolower((string)$userSession['sex']) : null;
+                $activityFactor = isset($userSession['activity_factor']) ? (float)$userSession['activity_factor'] : null;
                 $goal = $userSession['goal_preference'] ?? null;
 
                 if ($age !== null && $heightCm !== null && $weightKg !== null && $goal !== null) {
-                    // Compute average BMR (male + female) to be reasonable when sex isn't stored
-                    $bmrMale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) + 5;
-                    $bmrFemale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) - 161;
-                    $bmrAvg = ($bmrMale + $bmrFemale) / 2.0;
-
-                    // Default activity factor (since activity isn't stored in profile)
-                    $activityFactor = 1.55;
-                    $maintenance = (int)(round(($bmrAvg * $activityFactor) / 10) * 10);
+                    $maintenance = $this->calculateMaintenanceCalories($age, $heightCm, $weightKg, $sex, $activityFactor);
 
                     $adjustment = self::GOAL_KCAL_ADJUSTMENTS[$goal] ?? self::GOAL_KCAL_ADJUSTMENTS['maintain'];
                     $target = (int)(round(($maintenance + $adjustment) / 10) * 10);
@@ -68,5 +63,22 @@ class HomeController
         require __DIR__ . '/../Views/layouts/header.php';
         require __DIR__ . '/../Views/home.php';
         require __DIR__ . '/../Views/layouts/footer.php';
+    }
+
+    private function calculateMaintenanceCalories(int $age, float $heightCm, float $weightKg, ?string $sex, ?float $activityFactor): int
+    {
+        $activity = $activityFactor !== null ? $activityFactor : 1.55;
+
+        if ($sex === 'male') {
+            $bmr = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) + 5;
+        } elseif ($sex === 'female') {
+            $bmr = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) - 161;
+        } else {
+            $bmrMale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) + 5;
+            $bmrFemale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) - 161;
+            $bmr = ($bmrMale + $bmrFemale) / 2.0;
+        }
+
+        return (int)(round(($bmr * $activity) / 10) * 10);
     }
 }

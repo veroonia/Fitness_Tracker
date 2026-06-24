@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   user_id INT UNSIGNED NOT NULL,
   age INT NULL,
   goal_preference VARCHAR(20) NULL,
+  sex VARCHAR(10) NULL,
+  activity_factor DECIMAL(4,3) NULL,
   height_cm DECIMAL(5,2) NULL,
   weight_kg DECIMAL(5,2) NULL,
   bmi DECIMAL(5,2) NULL,

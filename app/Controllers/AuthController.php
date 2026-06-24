@@ -48,6 +48,8 @@ class AuthController
             'username' => $createdUser['username'] ?? $username,
             'email' => $createdUser['email'] ?? $email,
             'goal_preference' => $createdUser['goal_preference'] ?? null,
+            'sex' => $createdUser['sex'] ?? null,
+            'activity_factor' => $createdUser['activity_factor'] ?? null,
             'age' => $createdUser['age'] ?? null,
             'height_cm' => $createdUser['height_cm'] ?? null,
             'weight_kg' => $createdUser['weight_kg'] ?? null,
@@ -96,6 +98,8 @@ class AuthController
             'username' => $user['username'],
             'email' => $user['email'],
             'goal_preference' => $user['goal_preference'] ?? null,
+            'sex' => $user['sex'] ?? null,
+            'activity_factor' => $user['activity_factor'] ?? null,
             'age' => $user['age'] ?? null,
             'height_cm' => $user['height_cm'] ?? null,
             'weight_kg' => $user['weight_kg'] ?? null,
@@ -138,7 +142,9 @@ class AuthController
             $metrics['height_cm'],
             $metrics['weight_kg'],
             $metrics['bmi'],
-            $metrics['age']
+            $metrics['age'],
+            $metrics['sex'],
+            $metrics['activity_factor']
         );
     }
 
@@ -147,20 +153,31 @@ class AuthController
         $ageRaw = trim((string)($_POST['age'] ?? ''));
         $heightRaw = trim((string)($_POST['height_cm'] ?? ''));
         $weightRaw = trim((string)($_POST['weight_kg'] ?? ''));
+        $sex = strtolower(trim((string)($_POST['sex'] ?? '')));
+        $activityRaw = trim((string)($_POST['activity'] ?? ''));
 
-        if ($ageRaw === '' || $heightRaw === '' || $weightRaw === '') {
+        if ($ageRaw === '' || $heightRaw === '' || $weightRaw === '' || $sex === '' || $activityRaw === '') {
             return null;
         }
 
-        if (!is_numeric($ageRaw) || !is_numeric($heightRaw) || !is_numeric($weightRaw)) {
+        if (!is_numeric($ageRaw) || !is_numeric($heightRaw) || !is_numeric($weightRaw) || !is_numeric($activityRaw)) {
             return null;
         }
 
         $age = (int)$ageRaw;
         $heightCm = (float)$heightRaw;
         $weightKg = (float)$weightRaw;
+        $activityFactor = (float)$activityRaw;
 
         if ($age < 10 || $age > 100 || $heightCm < 100 || $heightCm > 260 || $weightKg < 20 || $weightKg > 400) {
+            return null;
+        }
+
+        if (!in_array($sex, ['male', 'female'], true)) {
+            return null;
+        }
+
+        if (!in_array($activityRaw, ['1.2', '1.375', '1.55', '1.725', '1.9'], true)) {
             return null;
         }
 
@@ -171,6 +188,8 @@ class AuthController
             'height_cm' => $heightCm,
             'weight_kg' => $weightKg,
             'bmi' => round($weightKg / ($heightM * $heightM), 2),
+            'sex' => $sex,
+            'activity_factor' => $activityFactor,
         ];
     }
 }

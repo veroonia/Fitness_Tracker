@@ -23,6 +23,8 @@ class User
                 u.email,
                 u.password_hash,
                 up.goal_preference,
+                up.sex,
+                up.activity_factor,
                 up.height_cm,
                 up.weight_kg,
                 up.bmi,
@@ -46,6 +48,8 @@ class User
                 u.username,
                 u.email,
                 up.goal_preference,
+                up.sex,
+                up.activity_factor,
                 up.height_cm,
                 up.weight_kg,
                 up.bmi,
@@ -152,7 +156,7 @@ class User
         ]);
     }
 
-    public function updateProfileMetrics(int $userId, float $heightCm, float $weightKg, float $bmi, int $age): bool
+    public function updateProfileMetrics(int $userId, float $heightCm, float $weightKg, float $bmi, int $age, ?string $sex = null, ?float $activityFactor = null): bool
     {
         $this->ensureProfileRow($userId);
         $statement = $this->db->prepare(
@@ -160,7 +164,9 @@ class User
              SET height_cm = :height_cm,
                  weight_kg = :weight_kg,
                  bmi = :bmi,
-                 age = :age
+                 age = :age,
+                 sex = COALESCE(:sex, sex),
+                 activity_factor = COALESCE(:activity_factor, activity_factor)
              WHERE user_id = :id'
         );
 
@@ -169,6 +175,8 @@ class User
             'weight_kg' => $weightKg,
             'bmi' => $bmi,
             'age' => $age,
+            'sex' => $sex,
+            'activity_factor' => $activityFactor,
             'id' => $userId,
         ]);
     }
@@ -219,6 +227,8 @@ class User
                 user_id ' . $userIdType . ' NOT NULL,
                 age INT NULL,
                 goal_preference VARCHAR(20) NULL,
+                sex VARCHAR(10) NULL,
+                activity_factor DECIMAL(4,3) NULL,
                 height_cm DECIMAL(5,2) NULL,
                 weight_kg DECIMAL(5,2) NULL,
                 bmi DECIMAL(5,2) NULL,
@@ -248,8 +258,16 @@ class User
             $this->db->exec('ALTER TABLE user_profiles ADD COLUMN goal_preference VARCHAR(20) NULL AFTER age');
         }
 
+        if (!$this->profileColumnExists('sex')) {
+            $this->db->exec('ALTER TABLE user_profiles ADD COLUMN sex VARCHAR(10) NULL AFTER goal_preference');
+        }
+
+        if (!$this->profileColumnExists('activity_factor')) {
+            $this->db->exec('ALTER TABLE user_profiles ADD COLUMN activity_factor DECIMAL(4,3) NULL AFTER sex');
+        }
+
         if (!$this->profileColumnExists('height_cm')) {
-            $this->db->exec('ALTER TABLE user_profiles ADD COLUMN height_cm DECIMAL(5,2) NULL AFTER goal_preference');
+            $this->db->exec('ALTER TABLE user_profiles ADD COLUMN height_cm DECIMAL(5,2) NULL AFTER activity_factor');
         }
 
         if (!$this->profileColumnExists('weight_kg')) {

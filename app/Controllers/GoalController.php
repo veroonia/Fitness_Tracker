@@ -90,6 +90,8 @@ class GoalController
                 'username' => $freshUser['username'],
                 'email' => $freshUser['email'],
                 'goal_preference' => $freshUser['goal_preference'] ?? $goal,
+                'sex' => $freshUser['sex'] ?? null,
+                'activity_factor' => $freshUser['activity_factor'] ?? null,
                 'age' => $freshUser['age'] ?? null,
                 'height_cm' => $freshUser['height_cm'] ?? null,
                 'weight_kg' => $freshUser['weight_kg'] ?? null,

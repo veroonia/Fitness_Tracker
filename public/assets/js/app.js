@@ -136,11 +136,13 @@ function restoreFormValues() {
 function getSavedProfileValues() {
     const values = {
         age: persistedFields.age.value.trim(),
+        sex: persistedFields.sex.value.trim(),
         height_cm: persistedFields.height.value.trim(),
-        weight_kg: persistedFields.weight.value.trim()
+        weight_kg: persistedFields.weight.value.trim(),
+        activity: persistedFields.activity.value.trim()
     };
 
-    if (values.age && values.height_cm && values.weight_kg) {
+    if (values.age && values.sex && values.height_cm && values.weight_kg && values.activity) {
         return values;
     }
 
@@ -157,11 +159,13 @@ function getSavedProfileValues() {
 
         const storedValues = {
             age: String(savedValues.age || '').trim(),
+            sex: String(savedValues.sex || '').trim(),
             height_cm: String(savedValues.height || '').trim(),
-            weight_kg: String(savedValues.weight || '').trim()
+            weight_kg: String(savedValues.weight || '').trim(),
+            activity: String(savedValues.activity || '').trim()
         };
 
-        if (!storedValues.age || !storedValues.height_cm || !storedValues.weight_kg) {
+        if (!storedValues.age || !storedValues.sex || !storedValues.height_cm || !storedValues.weight_kg || !storedValues.activity) {
             return null;
         }
 
@@ -210,22 +214,24 @@ form.addEventListener('submit', function (event) {
     }
 
     const maintenanceCalories = roundCalories(bmr * activityFactor);
-    const hugeDeficitCalories = roundCalories(maintenanceCalories * 0.70);
-    const moderateDeficitCalories = roundCalories(maintenanceCalories * 0.80);
-    const mildDeficitCalories = roundCalories(maintenanceCalories * 0.90);
-    const leanGainCalories = roundCalories(maintenanceCalories * 1.10);
-    const aggressiveGainCalories = roundCalories(maintenanceCalories * 1.15);
+    const caloriesPerKg = 7700;
+    const mildLossCalories = roundCalories(maintenanceCalories - (caloriesPerKg * 0.25 / 7));
+    const moderateLossCalories = roundCalories(maintenanceCalories - (caloriesPerKg * 0.50 / 7));
+    const extremeLossCalories = roundCalories(maintenanceCalories - (caloriesPerKg * 1.00 / 7));
+    const mildGainCalories = roundCalories(maintenanceCalories + (caloriesPerKg * 0.25 / 7));
+    const moderateGainCalories = roundCalories(maintenanceCalories + (caloriesPerKg * 0.50 / 7));
+    const fastGainCalories = roundCalories(maintenanceCalories + (caloriesPerKg * 1.00 / 7));
 
     bmiValue.textContent = bmi.toFixed(1);
     bmiValue.className = 'result-emphasis';
     bmiCategoryCell.innerHTML = `<span class="tag ${bmiInfo.className}">${bmiInfo.label}</span>`;
 
-    hugeDeficitText.innerHTML = `<span class="result-emphasis">${hugeDeficitCalories} kcal/day</span>`;
-    moderateDeficitText.innerHTML = `<span class="result-emphasis">${moderateDeficitCalories} kcal/day</span>`;
-    mildDeficitText.innerHTML = `<span class="result-emphasis">${mildDeficitCalories} kcal/day</span>`;
+    hugeDeficitText.innerHTML = `<span class="result-emphasis">${extremeLossCalories} kcal/day</span>`;
+    moderateDeficitText.innerHTML = `<span class="result-emphasis">${moderateLossCalories} kcal/day</span>`;
+    mildDeficitText.innerHTML = `<span class="result-emphasis">${mildLossCalories} kcal/day</span>`;
     maintenanceText.innerHTML = `<span class="result-emphasis">${maintenanceCalories} kcal/day</span>`;
-    leanGainText.innerHTML = `<span class="result-emphasis">${leanGainCalories} kcal/day</span>`;
-    aggressiveGainText.innerHTML = `<span class="result-emphasis">${aggressiveGainCalories} kcal/day</span>`;
+    leanGainText.innerHTML = `<span class="result-emphasis">${mildGainCalories} kcal/day</span>`;
+    aggressiveGainText.innerHTML = `<span class="result-emphasis">${fastGainCalories} kcal/day</span>`;
 
     results.style.display = 'block';
     trackMealsBtn.classList.remove('hidden');
