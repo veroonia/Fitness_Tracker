@@ -78,8 +78,14 @@
                     <label for="profileGoal">Target</label>
                     <select id="profileGoal" name="goal_preference" required>
                         <option value="">Select target</option>
-                        <option value="deficit" <?php echo (($currentUser['goal_preference'] ?? '') === 'deficit') ? 'selected' : ''; ?>>Deficit</option>
-                        <option value="gain" <?php echo (($currentUser['goal_preference'] ?? '') === 'gain') ? 'selected' : ''; ?>>Gain</option>
+                        <option value="maintain" <?php echo (($currentUser['goal_preference'] ?? '') === 'maintain') ? 'selected' : ''; ?>>Maintain Weight</option>
+                        <option value="loss_mild" <?php echo (($currentUser['goal_preference'] ?? '') === 'loss_mild') ? 'selected' : ''; ?>>Mild Weight Loss (0.25 kg/week)</option>
+                        <option value="loss" <?php echo (($currentUser['goal_preference'] ?? '') === 'loss') ? 'selected' : ''; ?>>Weight Loss (0.5 kg/week)</option>
+                        <option value="loss_extreme" <?php echo (($currentUser['goal_preference'] ?? '') === 'loss_extreme') ? 'selected' : ''; ?>>Extreme Weight Loss (1 kg/week)</option>
+                        <option value="gain_mild" <?php echo (($currentUser['goal_preference'] ?? '') === 'gain_mild') ? 'selected' : ''; ?>>Mild Weight Gain (0.25 kg/week)</option>
+                        <option value="gain" <?php echo (($currentUser['goal_preference'] ?? '') === 'gain') ? 'selected' : ''; ?>>Weight Gain (0.5 kg/week)</option>
+                        <option value="gain_fast" <?php echo (($currentUser['goal_preference'] ?? '') === 'gain_fast') ? 'selected' : ''; ?>>Fast Weight Gain (1 kg/week)</option>
+                        <option value="deficit" <?php echo (($currentUser['goal_preference'] ?? '') === 'deficit') ? 'selected' : ''; ?>>Deficit (legacy)</option>
                     </select>
                 </div>
 

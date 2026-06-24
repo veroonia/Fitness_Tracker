@@ -51,6 +51,29 @@ body.page-goals {
     gap: 14px;
 }
 
+.goal-detail {
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 14px;
+    display: grid;
+    gap: 10px;
+    background: #0b1220;
+}
+
+.goal-detail legend {
+    color: #cbd5e1;
+    font-weight: 600;
+    padding: 0 6px;
+}
+
+.detail-option {
+    margin: 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
 .goal-option {
     display: flex;
     align-items: flex-start;

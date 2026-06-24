@@ -6,6 +6,17 @@ class DashboardController
 {
     private User $users;
     private Meal $meals;
+    private const GOAL_KCAL_ADJUSTMENTS = [
+        'maintain' => 0,
+        'loss_mild' => -275,
+        'loss' => -550,
+        'loss_extreme' => -1100,
+        'gain_mild' => 275,
+        'gain' => 550,
+        'gain_fast' => 1100,
+        // Backward compatibility
+        'deficit' => -550,
+    ];
     private NutritionService $nutrition;
 
     public function __construct()
@@ -277,11 +288,8 @@ class DashboardController
         $activityFactor = 1.55;
         $maintenance = (int)(round(($bmrAvg * $activityFactor) / 10) * 10);
 
-        if ($goal === 'deficit') {
-            return (int)(round(($maintenance * 0.80) / 10) * 10);
-        }
-
-        return (int)(round(($maintenance * 1.10) / 10) * 10);
+        $adjustment = self::GOAL_KCAL_ADJUSTMENTS[$goal] ?? self::GOAL_KCAL_ADJUSTMENTS['maintain'];
+        return (int)(round(($maintenance + $adjustment) / 10) * 10);
     }
 
     private function buildCalendarWeeks(DateTimeImmutable $monthDate, array $dailyCalories): array

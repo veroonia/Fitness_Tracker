@@ -5,6 +5,17 @@ declare(strict_types=1);
 class GoalController
 {
     private User $users;
+    private const ALLOWED_GOALS = [
+        'maintain',
+        'loss_mild',
+        'loss',
+        'loss_extreme',
+        'gain_mild',
+        'gain',
+        'gain_fast',
+        // Backward compatibility
+        'deficit',
+    ];
 
     public function __construct()
     {
@@ -36,10 +47,28 @@ class GoalController
         header('Content-Type: application/json');
         $this->ensureAuthenticated(true);
 
+        $primaryGoal = strtolower(trim((string)($_POST['primary_goal'] ?? '')));
         $goal = strtolower(trim((string)($_POST['goal'] ?? '')));
-        if (!in_array($goal, ['deficit', 'gain'], true)) {
+
+        if (!in_array($primaryGoal, ['maintain', 'loss', 'gain'], true)) {
             http_response_code(422);
-            echo json_encode(['success' => false, 'message' => 'Please select either deficit or gain.']);
+            echo json_encode(['success' => false, 'message' => 'Please choose maintenance, loss, or gain first.']);
+            return;
+        }
+
+        if (!in_array($goal, self::ALLOWED_GOALS, true)) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Please choose a valid goal pace.']);
+            return;
+        }
+
+        if (
+            ($primaryGoal === 'maintain' && $goal !== 'maintain') ||
+            ($primaryGoal === 'loss' && !in_array($goal, ['loss_mild', 'loss', 'loss_extreme', 'deficit'], true)) ||
+            ($primaryGoal === 'gain' && !in_array($goal, ['gain_mild', 'gain', 'gain_fast'], true))
+        ) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Selected pace does not match your primary goal.']);
             return;
         }
 
