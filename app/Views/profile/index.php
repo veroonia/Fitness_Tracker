@@ -76,10 +76,21 @@
 
                 <div class="field full">
                     <label for="profileGoal">Target</label>
+                    <?php $currentGoal = (string)($currentUser['goal_preference'] ?? ''); ?>
                     <select id="profileGoal" name="goal_preference" required>
                         <option value="">Select target</option>
-                        <option value="deficit" <?php echo (($currentUser['goal_preference'] ?? '') === 'deficit') ? 'selected' : ''; ?>>Deficit</option>
-                        <option value="gain" <?php echo (($currentUser['goal_preference'] ?? '') === 'gain') ? 'selected' : ''; ?>>Gain</option>
+                        <option value="loss_extreme" <?php echo $currentGoal === 'loss_extreme' ? 'selected' : ''; ?>>Huge Deficit (70% of maintenance)</option>
+                        <option value="loss" <?php echo $currentGoal === 'loss' ? 'selected' : ''; ?>>Moderate Deficit (80% of maintenance)</option>
+                        <option value="loss_mild" <?php echo $currentGoal === 'loss_mild' ? 'selected' : ''; ?>>Mild Deficit (90% of maintenance)</option>
+                        <option value="maintain" <?php echo $currentGoal === 'maintain' ? 'selected' : ''; ?>>Maintenance</option>
+                        <option value="gain_mild" <?php echo $currentGoal === 'gain_mild' ? 'selected' : ''; ?>>Lean Gain (110% of maintenance)</option>
+                        <option value="gain" <?php echo $currentGoal === 'gain' ? 'selected' : ''; ?>>Aggressive Gain (115% of maintenance)</option>
+                        <?php if ($currentGoal === 'deficit'): ?>
+                            <option value="deficit" selected>Moderate Deficit (80% of maintenance)</option>
+                        <?php endif; ?>
+                        <?php if ($currentGoal === 'gain_fast'): ?>
+                            <option value="gain_fast" selected>Aggressive Gain (115% of maintenance)</option>
+                        <?php endif; ?>
                     </select>
                 </div>
 

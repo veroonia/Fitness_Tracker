@@ -5,18 +5,50 @@
 
         <form id="goalForm" class="goal-form" novalidate>
             <label class="goal-option">
-                <input type="radio" name="goal" value="deficit" required />
+                <input type="radio" name="goal" value="loss_extreme" required />
                 <span>
-                    <strong>Deficit</strong>
-                    <small>Focus on fat loss with calorie deficit targets.</small>
+                    <strong>Huge Deficit</strong>
+                    <small>Aggressive fat-loss target around 70% of maintenance calories.</small>
+                </span>
+            </label>
+
+            <label class="goal-option">
+                <input type="radio" name="goal" value="loss" required />
+                <span>
+                    <strong>Moderate Deficit</strong>
+                    <small>Steady fat-loss target around 80% of maintenance calories.</small>
+                </span>
+            </label>
+
+            <label class="goal-option">
+                <input type="radio" name="goal" value="loss_mild" required />
+                <span>
+                    <strong>Mild Deficit</strong>
+                    <small>Easy fat-loss target around 90% of maintenance calories.</small>
+                </span>
+            </label>
+
+            <label class="goal-option">
+                <input type="radio" name="goal" value="maintain" required />
+                <span>
+                    <strong>Maintenance</strong>
+                    <small>Keep your current body weight with balanced daily calories.</small>
+                </span>
+            </label>
+
+            <label class="goal-option">
+                <input type="radio" name="goal" value="gain_mild" required />
+                <span>
+                    <strong>Lean Gain</strong>
+                    <small>Small surplus around 110% of maintenance calories.</small>
                 </span>
             </label>
 
             <label class="goal-option">
                 <input type="radio" name="goal" value="gain" required />
                 <span>
-                    <strong>Gain</strong>
-                    <small>Focus on muscle and weight gain with surplus targets.</small>
+                    <strong>Aggressive Gain</strong>
+                    <small>Bigger surplus around 115% of maintenance calories.</small>
                 </span>
             </label>
 

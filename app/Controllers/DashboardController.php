@@ -7,6 +7,16 @@ class DashboardController
     private User $users;
     private Meal $meals;
     private NutritionService $nutrition;
+    private const GOAL_KCAL_MULTIPLIERS = [
+        'maintain' => 1.00,
+        'loss_mild' => 0.90,
+        'loss' => 0.80,
+        'loss_extreme' => 0.70,
+        'gain_mild' => 1.10,
+        'gain' => 1.15,
+        'gain_fast' => 1.15,
+        'deficit' => 0.80,
+    ];
 
     public function __construct()
     {
@@ -270,18 +280,19 @@ class DashboardController
             return null;
         }
 
+        $maintenance = $this->calculateMaintenanceCalories($age, $heightCm, $weightKg);
+        $multiplier = self::GOAL_KCAL_MULTIPLIERS[$goal] ?? self::GOAL_KCAL_MULTIPLIERS['maintain'];
+
+        return (int)(round(($maintenance * $multiplier) / 10) * 10);
+    }
+
+    private function calculateMaintenanceCalories(int $age, float $heightCm, float $weightKg): int
+    {
         $bmrMale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) + 5;
         $bmrFemale = (10 * $weightKg) + (6.25 * $heightCm) - (5 * $age) - 161;
-        $bmrAvg = ($bmrMale + $bmrFemale) / 2.0;
+        $bmr = ($bmrMale + $bmrFemale) / 2.0;
 
-        $activityFactor = 1.55;
-        $maintenance = (int)(round(($bmrAvg * $activityFactor) / 10) * 10);
-
-        if ($goal === 'deficit') {
-            return (int)(round(($maintenance * 0.80) / 10) * 10);
-        }
-
-        return (int)(round(($maintenance * 1.10) / 10) * 10);
+        return (int)(round(($bmr * 1.55) / 10) * 10);
     }
 
     private function buildCalendarWeeks(DateTimeImmutable $monthDate, array $dailyCalories): array

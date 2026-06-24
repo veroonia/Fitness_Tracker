@@ -6,15 +6,15 @@ class MealsController
 {
     private User $users;
     private Meal $meals;
-    private const GOAL_KCAL_ADJUSTMENTS = [
-        'maintain' => 0,
-        'loss_mild' => -275,
-        'loss' => -550,
-        'loss_extreme' => -1100,
-        'gain_mild' => 275,
-        'gain' => 550,
-        'gain_fast' => 1100,
-        'deficit' => -550,
+    private const GOAL_KCAL_MULTIPLIERS = [
+        'maintain' => 1.00,
+        'loss_mild' => 0.90,
+        'loss' => 0.80,
+        'loss_extreme' => 0.70,
+        'gain_mild' => 1.10,
+        'gain' => 1.15,
+        'gain_fast' => 1.15,
+        'deficit' => 0.80,
     ];
 
     public function __construct()
@@ -101,9 +101,9 @@ class MealsController
         }
 
         $maintenance = $this->calculateMaintenanceCalories($age, $heightCm, $weightKg, $sex, $activityFactor);
-        $adjustment = self::GOAL_KCAL_ADJUSTMENTS[$goal] ?? self::GOAL_KCAL_ADJUSTMENTS['maintain'];
+        $multiplier = self::GOAL_KCAL_MULTIPLIERS[$goal] ?? self::GOAL_KCAL_MULTIPLIERS['maintain'];
 
-        return (int)(round(($maintenance + $adjustment) / 10) * 10);
+        return (int)(round(($maintenance * $multiplier) / 10) * 10);
     }
 
     private function calculateMaintenanceCalories(int $age, float $heightCm, float $weightKg, ?string $sex, ?float $activityFactor): int

@@ -5,6 +5,16 @@ declare(strict_types=1);
 class GoalController
 {
     private User $users;
+    private const ALLOWED_GOALS = [
+        'maintain',
+        'loss_mild',
+        'loss',
+        'loss_extreme',
+        'gain_mild',
+        'gain',
+        'gain_fast',
+        'deficit',
+    ];
 
     public function __construct()
     {
@@ -37,9 +47,9 @@ class GoalController
         $this->ensureAuthenticated(true);
 
         $goal = strtolower(trim((string)($_POST['goal'] ?? '')));
-        if (!in_array($goal, ['deficit', 'gain'], true)) {
+        if (!in_array($goal, self::ALLOWED_GOALS, true)) {
             http_response_code(422);
-            echo json_encode(['success' => false, 'message' => 'Please select either deficit or gain.']);
+            echo json_encode(['success' => false, 'message' => 'Please select a valid goal.']);
             return;
         }
 

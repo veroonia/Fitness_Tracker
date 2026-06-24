@@ -6,6 +6,16 @@ class ProfileController
 {
     private User $users;
     private Meal $meals;
+    private const ALLOWED_GOALS = [
+        'maintain',
+        'loss_mild',
+        'loss',
+        'loss_extreme',
+        'gain_mild',
+        'gain',
+        'gain_fast',
+        'deficit',
+    ];
 
     public function __construct()
     {
@@ -64,7 +74,7 @@ class ProfileController
         $weightRaw = trim((string)($_POST['weight_kg'] ?? ''));
         $goal = strtolower(trim((string)($_POST['goal_preference'] ?? '')));
 
-        if (!in_array($goal, ['deficit', 'gain'], true)) {
+        if (!in_array($goal, self::ALLOWED_GOALS, true)) {
             http_response_code(422);
             echo json_encode(['success' => false, 'message' => 'Please select a valid target goal.']);
             return;

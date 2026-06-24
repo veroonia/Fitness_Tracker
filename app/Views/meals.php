@@ -1,14 +1,14 @@
 <?php
 
 $goalLabels = [
-    'maintain' => 'Maintain Weight',
-    'loss_mild' => 'Mild Weight Loss (0.25 kg/week)',
-    'loss' => 'Weight Loss (0.5 kg/week)',
-    'loss_extreme' => 'Extreme Weight Loss (1 kg/week)',
-    'gain_mild' => 'Mild Weight Gain (0.25 kg/week)',
-    'gain' => 'Weight Gain (0.5 kg/week)',
-    'gain_fast' => 'Fast Weight Gain (1 kg/week)',
-    'deficit' => 'Deficit',
+    'maintain' => 'Maintenance',
+    'loss_mild' => 'Mild Deficit',
+    'loss' => 'Moderate Deficit',
+    'loss_extreme' => 'Huge Deficit',
+    'gain_mild' => 'Lean Gain',
+    'gain' => 'Aggressive Gain',
+    'gain_fast' => 'Aggressive Gain',
+    'deficit' => 'Moderate Deficit',
 ];
 
 $goalKey = (string)($currentUser['goal_preference'] ?? '');

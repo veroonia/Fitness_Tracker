@@ -4,6 +4,17 @@ declare(strict_types=1);
 
 class HomeController
 {
+    private const GOAL_KCAL_MULTIPLIERS = [
+        'maintain' => 1.00,
+        'loss_mild' => 0.90,
+        'loss' => 0.80,
+        'loss_extreme' => 0.70,
+        'gain_mild' => 1.10,
+        'gain' => 1.15,
+        'gain_fast' => 1.15,
+        'deficit' => 0.80,
+    ];
+
     public function index(): void
     {
         $currentUser = null;
@@ -37,12 +48,8 @@ class HomeController
                     $activityFactor = 1.55;
                     $maintenance = (int)(round(($bmrAvg * $activityFactor) / 10) * 10);
 
-                    if ($goal === 'deficit') {
-                        $target = (int)(round(($maintenance * 0.80) / 10) * 10);
-                    } else {
-                        // 'gain' or other
-                        $target = (int)(round(($maintenance * 1.10) / 10) * 10);
-                    }
+                    $multiplier = self::GOAL_KCAL_MULTIPLIERS[$goal] ?? self::GOAL_KCAL_MULTIPLIERS['maintain'];
+                    $target = (int)(round(($maintenance * $multiplier) / 10) * 10);
 
                     $currentUser['calorie_goal'] = $target;
                     $todayTotals = $mealModel->totalsByUserForDate((int)$currentUser['id']);

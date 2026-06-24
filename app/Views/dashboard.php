@@ -16,13 +16,25 @@
         $calorieSummary = $dailyGoalCalories !== null
             ? number_format($currentCalories, 0) . ' / ' . number_format((float)$dailyGoalCalories, 0) . ' kcal'
             : number_format($currentCalories, 0) . ' kcal';
+        $goalLabels = [
+            'maintain' => 'Maintenance',
+            'loss_mild' => 'Mild Deficit',
+            'loss' => 'Moderate Deficit',
+            'loss_extreme' => 'Huge Deficit',
+            'gain_mild' => 'Lean Gain',
+            'gain' => 'Aggressive Gain',
+            'gain_fast' => 'Aggressive Gain',
+            'deficit' => 'Moderate Deficit',
+        ];
+        $goalKey = (string)($currentUser['goal_preference'] ?? '');
+        $goalText = $goalLabels[$goalKey] ?? ($goalKey !== '' ? ucfirst(str_replace('_', ' ', $goalKey)) : 'Not set');
         ?>
         <header class="dash-topbar">
             <div class="user-pill">
                 <div class="avatar-circle"><?php echo strtoupper(substr((string)($currentUser['username'] ?? 'U'), 0, 1)); ?></div>
                 <div>
                     <h2><?php echo htmlspecialchars((string)($currentUser['username'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p>Goal: <?php echo htmlspecialchars(ucfirst((string)($currentUser['goal_preference'] ?? 'Not set')), ENT_QUOTES, 'UTF-8'); ?></p>
+                    <p>Goal: <?php echo htmlspecialchars($goalText, ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
             </div>
             <div class="dash-top-actions">
