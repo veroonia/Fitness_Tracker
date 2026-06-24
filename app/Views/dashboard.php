@@ -28,12 +28,15 @@
         ];
         $goalKey = (string)($currentUser['goal_preference'] ?? '');
         $goalText = $goalLabels[$goalKey] ?? (($goalKey !== '') ? ucfirst(str_replace('_', ' ', $goalKey)) : 'Not set');
+        $fullName = trim((string)($currentUser['username'] ?? 'User'));
+        $firstName = $fullName !== '' ? explode(' ', $fullName)[0] : 'User';
+        $displayName = ucfirst(strtolower($firstName));
         ?>
         <header class="dash-topbar">
             <div class="user-pill">
                 <div class="avatar-circle"><?php echo strtoupper(substr((string)($currentUser['username'] ?? 'U'), 0, 1)); ?></div>
                 <div>
-                    <h2><?php echo htmlspecialchars((string)($currentUser['username'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></h2>
+                    <h2><?php echo htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8'); ?></h2>
                     <p>Goal: <?php echo htmlspecialchars($goalText, ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
             </div>
